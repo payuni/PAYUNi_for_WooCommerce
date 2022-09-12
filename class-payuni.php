@@ -487,7 +487,7 @@ function payuni_gateway_init() {
         }
         private function writeLog($msg = '', $with_input = true)
         {
-            $file_path = __DIR__ .'/logs/'; // 檔案路徑
+            $file_path = __DIR__ .'/payuni_logs/'; // 檔案路徑
             if(! is_dir($file_path)) {
                 return;
             }
