@@ -56,6 +56,7 @@ function payuni_gateway_init() {
             // Test Mode
             if ($this->TestMode == 'yes') {
                 $this->gateway = "https://sandbox-api.payuni.com.tw/api/upp"; //測試網址
+                $this->gateway = "http://lapi-epay.presco.com.tw/api/upp"; //測試網址
             } else {
                 $this->gateway = "https://api.payuni.com.tw/api/upp"; // 正式網址
             }
@@ -379,6 +380,7 @@ function payuni_gateway_init() {
                 'MerID' => $this->MerchantID,
                 'MerTradeNo' => $order->get_id(),
                 'TradeAmt'  => (int) $order->get_total(),
+                'ExpireDate' => date('Y-m-d', strtotime("+".$this->ExpireDate." days")),
                 'ReturnURL' => $this->get_return_url($order),
                 "NotifyURL" => $this->notify_url, //幕後
                 'Timestamp' => time()
