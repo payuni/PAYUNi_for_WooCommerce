@@ -56,7 +56,6 @@ function payuni_gateway_init() {
             // Test Mode
             if ($this->TestMode == 'yes') {
                 $this->gateway = "https://sandbox-api.payuni.com.tw/api/upp"; //測試網址
-                $this->gateway = "http://lapi-epay.presco.com.tw/api/upp"; //測試網址
             } else {
                 $this->gateway = "https://api.payuni.com.tw/api/upp"; // 正式網址
             }
@@ -241,7 +240,6 @@ function payuni_gateway_init() {
                         $this->writeLog($msg);
                         exit;
                     }
-                    $this->writeLog('thank:'.$encryptInfo['TradeStatus']);
                     $message = $this->SetNotice($encryptInfo);
                     echo $message;
                 }
@@ -282,7 +280,6 @@ function payuni_gateway_init() {
                     }
                     $message = $this->SetNotice($encryptInfo);
                     $order->add_order_note($message);
-                    $this->writeLog('response:'.$encryptInfo['TradeStatus']);
                     switch ($encryptInfo['TradeStatus']) {
                         case '0':
                             $order->update_status('on-hold', __( 'Awaiting cheque payment', 'woocommerce' ));
