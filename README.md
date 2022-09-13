@@ -1,4 +1,6 @@
 # PAYUNi for WooCommerce
+ * 提供使用WooCommerce購物車模組時，可直接透過安裝設定此套件，以便於快速串接統一金流PAYUNi之金流系統。
+# 目錄
  * [版本需求](#版本需求)
  * [安裝方式](#安裝方式)
  * [相關設定](#相關設定)
@@ -11,9 +13,9 @@
      <th>PHP</th>
    </tr>
    <tr>
-     <td>6.0.2</td>
-     <td>6.8.2</td>
-     <td>8.1.6</td>
+     <td align="center">6.0.2</td>
+     <td align="center">6.8.2</td>
+     <td align="center">8.1.6</td>
    </tr>
  </table>
  
