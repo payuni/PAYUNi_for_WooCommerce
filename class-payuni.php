@@ -346,6 +346,7 @@ function payuni_gateway_init() {
                 case '6': // ICP 愛金卡
                     $message .= "</br>訂單狀態：" . $trdStatus[$encryptInfo['TradeStatus']];
                     $message .= "</br>UNi序號：" . $encryptInfo['TradeNo'];
+                    $message .= "</br>愛金卡交易序號：" . $encryptInfo['ICPNo'];
                     $message .= "</br>付款日期時間：" . $encryptInfo['ICPPayDT'];
                     break;
                 default: // 預設顯示資訊
