@@ -343,6 +343,15 @@ function payuni_gateway_init() {
                     $message .= "</br>繳費代號：" . $encryptInfo['PayNo'];
                     $message .= "</br>繳費截止時間：" . $encryptInfo['ExpireDate'];
                     break;
+                case '6': // ICP 愛金卡
+                    $message .= "</br>訂單狀態：" . $trdStatus[$encryptInfo['TradeStatus']];
+                    $message .= "</br>UNi序號：" . $encryptInfo['TradeNo'];
+                    $message .= "</br>付款日期時間：" . $encryptInfo['ICPPayDT'];
+                    break;
+                default: // 預設顯示資訊
+                    $message .= "</br>訂單狀態：" . $trdStatus[$encryptInfo['TradeStatus']];
+                    $message .= "</br>UNi序號：" . $encryptInfo['TradeNo'];
+                    break;
             }
             return $message;
         }
