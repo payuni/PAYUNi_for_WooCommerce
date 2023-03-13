@@ -383,11 +383,18 @@ function payuni_gateway_init() {
          */
         private function uppOnePointHandler($order)
         {
+            $prodDesc = [];
+            $items = $order->get_items();
+            foreach ( $items as $item ) {
+                $prodDesc[] = $item->get_name() . ' * ' . $item->get_quantity();
+            }
+
             $encryptInfo = [
                 'MerID' => $this->MerchantID,
                 'MerTradeNo' => $order->get_id(),
                 'TradeAmt'  => (int) $order->get_total(),
                 'ExpireDate' => date('Y-m-d', strtotime("+".$this->ExpireDate." days")),
+                'ProdDesc' => implode(';', $prodDesc),
                 'ReturnURL' => $this->get_return_url($order),
                 "NotifyURL" => $this->notify_url, //幕後
                 'Timestamp' => time()
