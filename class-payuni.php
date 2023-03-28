@@ -250,7 +250,6 @@ function payuni_gateway_init() {
             else {
                 echo "解密失敗";
             }
-            exit;
         }
         /**
          * 接收回傳參數驗證
