@@ -31,7 +31,7 @@ class WC_PAYUNi_Logistic {
     // 物流必須同時使用統一金流支付
     public function check_shipping_payment($payment_gateways)
     {
-        if ( ! is_admin() ) {
+        if ( ! is_admin() && function_exists('wc_get_chosen_shipping_method_ids') ) {
             $chosen_shipping_tmp = wc_get_chosen_shipping_method_ids();
             if(empty($chosen_shipping_tmp)){
                 return array();
