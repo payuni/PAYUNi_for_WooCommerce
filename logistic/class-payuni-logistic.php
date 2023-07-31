@@ -34,7 +34,7 @@ class WC_PAYUNi_Logistic {
         if ( ! is_admin() && function_exists('wc_get_chosen_shipping_method_ids') ) {
             $chosen_shipping_tmp = wc_get_chosen_shipping_method_ids();
             if(empty($chosen_shipping_tmp)){
-                return array();
+                return $payment_gateways;
             }
             $chosen_shipping = $chosen_shipping_tmp[0] ;
 
