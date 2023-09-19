@@ -336,7 +336,8 @@ function payuni_gateway_init() {
 
             switch ($encryptInfo['PaymentType']){
                 case '1': // 信用卡
-                    $authType = [1=>'一次', 2=>'分期', 3=>'紅利', 7=>'銀聯'];
+                    $authType = [0=>'無', 1=>'一次', 2=>'分期', 3=>'紅利', 4=>'Apple Pay', 5=>'Google Pay', 6=>'Samsung Pay', 7=>'銀聯'];
+                    $encryptInfo['AuthType'] = (array_key_exists($encryptInfo['AuthType'], $authType)) ? $encryptInfo['AuthType'] : 0 ;
                     if ( !$shipping_final_status ) {
                         $message .= "</br>授權狀態：" . $encryptInfo['Message'];
                         $message .= "</br>卡號：" . $encryptInfo['Card6No'] . '******' . $encryptInfo['Card4No'];
