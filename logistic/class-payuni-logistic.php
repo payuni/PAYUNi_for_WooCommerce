@@ -15,7 +15,9 @@ class WC_PAYUNi_Logistic {
         include plugin_dir_path( __FILE__ ) . 'payuni-logistic.php';
         include plugin_dir_path( __FILE__ ) . 'payuni-logistic-711.php';
         include plugin_dir_path( __FILE__ ) . 'payuni-logistic-711-freeze.php';
-        // include plugin_dir_path( __FILE__ ) . 'payuni-logistic-tcat.php';
+        include plugin_dir_path( __FILE__ ) . 'payuni-logistic-tcat.php';
+        include plugin_dir_path( __FILE__ ) . 'payuni-logistic-tcat-freeze.php';
+        include plugin_dir_path( __FILE__ ) . 'payuni-logistic-tcat-cold.php';
     }
 
     // 塞入物流方式
@@ -23,7 +25,9 @@ class WC_PAYUNi_Logistic {
     {   
         $methods['PAYUNi_Logistic_711'] = 'PAYUNi_Logistic_711';
         $methods['PAYUNi_Logistic_711_Freeze'] = 'PAYUNi_Logistic_711_Freeze';
-        // $methods['PAYUNi_Logistic_Tcat'] = 'PAYUNi_Logistic_Tcat';
+        $methods['PAYUNi_Logistic_Tcat'] = 'PAYUNi_Logistic_Tcat';
+        $methods['PAYUNi_Logistic_Tcat_Freeze'] = 'PAYUNi_Logistic_Tcat_Freeze';
+        $methods['PAYUNi_Logistic_Tcat_Cold'] = 'PAYUNi_Logistic_Tcat_Cold';
 
         return $methods;
     }
@@ -43,12 +47,14 @@ class WC_PAYUNi_Logistic {
                     'payuni' => $payment_gateways['payuni']
                 ];
 
-                // 選擇超商物流 結帳總金額檢查(超過兩萬出現提示訊息)
-                if( in_array($chosen_shipping, array('PAYUNi_Logistic_711', 'PAYUNi_Logistic_711_Freeze') ) ){
-                    $total = $this->get_order_total();
-                    if($total >= 20000){
-                        $payment_gateways['payuni']->description .= '<p class="woocommerce-notice woocommerce-notice--info woocommerce-info">訂單總金額超過2萬元，將無法使用取貨付款。</p>';
-                    }
+                $total = $this->get_order_total();
+                // 結帳總金額檢查(超過兩萬提示訊息)
+                if($total >= 20000){
+                    $payment_gateways['payuni']->description .= '<p class="woocommerce-notice woocommerce-notice--info woocommerce-info">訂單總金額超過2萬元，將無法使用貨到付款。</p>';
+                }
+                // 結帳總金額檢查(低於30元提示訊息)
+                if($total <= 30){
+                    $payment_gateways['payuni']->description .= '<p class="woocommerce-notice woocommerce-notice--info woocommerce-info">訂單總金額低於30元，將無法使用貨到付款。</p>';
                 }
             }
         }

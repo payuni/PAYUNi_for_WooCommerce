@@ -57,6 +57,15 @@ function payuni_gateway_init() {
             $this->TestMode    = $this->settings['TestMode'];
             $this->notify_url  = add_query_arg('wc-api', 'WC_payuni', home_url('/'));
 
+            // 物流溫層
+            $this->shippingGoodsType = [
+                'PAYUNi_Logistic_711'         => 1,
+                'PAYUNi_Logistic_711_Freeze'  => 2,
+                'PAYUNi_Logistic_Tcat'        => 1,
+                'PAYUNi_Logistic_Tcat_Freeze' => 2,
+                'PAYUNi_Logistic_Tcat_Cold'   => 3,
+            ];
+
             // Test Mode
             if ($this->TestMode == 'yes') {
                 $this->gateway = "https://sandbox-api.payuni.com.tw/api/upp"; //測試網址
@@ -408,6 +417,17 @@ function payuni_gateway_init() {
                             $message .= "</br>收件人手機號碼：" . $encryptInfo['ConsigneeMobile'];
                         }
                         break;
+                    case '2': // 黑貓
+                        $goodsType = [1=>'常溫', 2=>'冷凍', 3=>'冷藏'];
+                        $serviceType = [1=>'取貨付款', 3=>'取貨不付款'];
+                        $message .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
+                        $message .= "</br>通路類別： 黑貓";
+                        $message .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
+                        if ( !$shipping_final_status ) {
+                            $message .= "</br>收件人：" . $encryptInfo['Consignee'];
+                            $message .= "</br>收件人手機號碼：" . $encryptInfo['ConsigneeMobile'];
+                        }
+                        break;
                     default: // 預設顯示資訊
                         break;
                 }
@@ -473,9 +493,21 @@ function payuni_gateway_init() {
                     $encryptInfo['ShipTag']         = 1;
                     $encryptInfo['ShipType']        = 1;
                     $encryptInfo['LgsType']         = trim($this->settings['CvsType']);
-                    $encryptInfo['GoodsType']       = ($shipping_data_method_id == 'PAYUNi_Logistic_711_Freeze') ? 2 : 1;
+                    $encryptInfo['GoodsType']       = $this->shippingGoodsType[$shipping_data_method_id];
                     $encryptInfo['Consignee']       = $order->get_shipping_last_name() . $order->get_shipping_first_name();
                     $encryptInfo['ConsigneeMobile'] = $order->get_billing_phone();
+                    break;
+                // 黑貓取貨(常溫、冷凍、冷藏)
+                case 'PAYUNi_Logistic_Tcat':
+                case 'PAYUNi_Logistic_Tcat_Freeze':
+                case 'PAYUNi_Logistic_Tcat_Cold':
+                    $encryptInfo['ShipTag']          = 1;
+                    $encryptInfo['ShipType']         = 2;
+                    $encryptInfo['LgsType']          = 'HOME';
+                    $encryptInfo['GoodsType']        = $this->shippingGoodsType[$shipping_data_method_id];
+                    $encryptInfo['Consignee']        = $order->get_shipping_last_name() . $order->get_shipping_first_name();
+                    $encryptInfo['ConsigneeMobile']  = $order->get_billing_phone();
+                    // $encryptInfo['ConsigneeAddress'] = $order->get_shipping_state() . $order->get_shipping_city() . $order->get_shipping_address_1() . $order->get_shipping_address_2();
                     break;
                 default:
                     break;
