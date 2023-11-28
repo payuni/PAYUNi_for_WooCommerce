@@ -10,7 +10,7 @@
  * [版本需求](#版本需求)
  * [安裝方式](#安裝方式)
  * [相關設定](#相關設定)
- 
+
 # 版本需求
  <table>
    <tr>
@@ -24,7 +24,7 @@
      <td align="center">8.1.6</td>
    </tr>
  </table>
- 
+
 # 安裝方式
   * 將下載下來的壓縮檔直接上傳到外掛模組，流程如下：
     * 購物車後台 → 外掛
@@ -39,13 +39,13 @@
     <br/><img src="https://github.com/payuni/sample_picture/raw/main/woocommerce/install_file.jpg" width="30%" height="30%"/><br/>
     * 啟用外掛
     <br/><img src="https://github.com/payuni/sample_picture/raw/main/woocommerce/setup.jpg" width="30%" height="30%"/><br/>
-    
+
 # 相關設定
 - 設定路徑
   - `購物車後台` -> `WooCommerce` -> `設定(Settings)` -> `付款`
   <br/><img src="https://github.com/payuni/sample_picture/raw/main/woocommerce/setting.jpg" width="30%" height="30%"/><br/>
 
-- 找到「統一金流 PAYUNi」點選管理 
+- 找到「統一金流 PAYUNi」點選管理
   <br/><img src="https://github.com/payuni/sample_picture/raw/main/woocommerce/setting2.jpg" width="80%" height="80%"/><br/>
 
 - 整合式支付模組設定
@@ -64,3 +64,18 @@
     ![setting5](https://github.com/payuni/sample_picture/raw/main/woocommerce/setting5.jpg)
     ![setting6](https://github.com/payuni/sample_picture/raw/main/woocommerce/setting6.jpg)
     ![setting7](https://github.com/payuni/sample_picture/raw/main/woocommerce/setting7.jpg)
+
+    - 若有特定商品需過濾在結帳時不顯示711或黑貓運送選項，請至`運送方式`->`運送類別`->`新增或修改運送類別`，
+      - 運送類別代稱設定
+        - `no711`：分到該運送類別之商品，於結帳時`不會`顯示711物流的選項
+        - `nocat`：分到該運送類別之商品，於結帳時`不會`顯示黑貓物流的選項
+        ![shippingClassSetting](https://github.com/payuni/sample_picture/raw/main/woocommerce/shippingClassSetting.jpg)
+
+      - 結帳時商品`有`分類到no711運送類別中的商品<br/>
+        ![no711](https://github.com/payuni/sample_picture/raw/main/woocommerce/no711.jpg)
+      - 結帳時商品`無`分類到no711運送類別中的商品<br/>
+        ![have711](https://github.com/payuni/sample_picture/raw/main/woocommerce/have711.jpg)
+
+      - `注意事項`
+        請於更新`v1.1.5`版時，重新異動運送方式(隨意開關某一種方式即可)，並儲存設定，使過濾的設定可以生效。
+        ![reflashSetting](https://github.com/payuni/sample_picture/raw/main/woocommerce/reflashSetting.jpg)

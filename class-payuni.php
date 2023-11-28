@@ -1,4 +1,5 @@
 <?php
+
 /**
  * payuni Payment Gateway
  * Plugin URI: https://www.payuni.com.tw/
@@ -11,27 +12,30 @@
  * @extends     WC_Payment_Gateway
  * @version
  */
-require_once plugin_dir_path( __FILE__ ) . '/logistic/class-payuni-logistic.php';
+require_once plugin_dir_path(__FILE__) . '/logistic/class-payuni-logistic.php';
 
 add_action('plugins_loaded', 'payuni_gateway_init', 0);
 
-function payuni_gateway_init() {
+function payuni_gateway_init()
+{
     if (!class_exists('WC_Payment_Gateway')) {
         return;
     }
     $plugin_logistic = new WC_PAYUNi_Logistic();
 
-    class WC_payuni extends WC_Payment_Gateway {
+    class WC_payuni extends WC_Payment_Gateway
+    {
         /**
          * Constructor for the gateway.
          *
          * @access public
          * @return void
          */
-        public function __construct() {
+        public function __construct()
+        {
             // Check ExpireDate is validate or not
-            if(isset($_POST['woocommerce_payuni_ExpireDate']) && (!preg_match('/^\d*$/', $_POST['woocommerce_payuni_ExpireDate']) || $_POST['woocommerce_payuni_ExpireDate'] < 1 || $_POST['woocommerce_payuni_ExpireDate'] > 180)){
-              $_POST['woocommerce_payuni_ExpireDate'] = 7;
+            if (isset($_POST['woocommerce_payuni_ExpireDate']) && (!preg_match('/^\d*$/', $_POST['woocommerce_payuni_ExpireDate']) || $_POST['woocommerce_payuni_ExpireDate'] < 1 || $_POST['woocommerce_payuni_ExpireDate'] > 180)) {
+                $_POST['woocommerce_payuni_ExpireDate'] = 7;
             }
 
             $this->id   = 'payuni';
@@ -87,7 +91,8 @@ function payuni_gateway_init() {
          * @return void
          * 後台欄位設置
          */
-        function init_form_fields() {
+        function init_form_fields()
+        {
             $this->form_fields = array(
                 'enabled' => array(
                     'title' => __('啟用/關閉', 'woocommerce'),
@@ -158,9 +163,10 @@ function payuni_gateway_init() {
          * @access public
          * @return void
          */
-        public function admin_options() {
+        public function admin_options()
+        {
 
-            ?>
+?>
             <h3><?php _e('統一金流 整合式支付模組', 'woocommerce'); ?></h3>
             <p><?php _e('此模組可以讓您使用統一金流的整合式支付功能', 'woocommerce'); ?></p>
             <table class="form-table">
@@ -169,60 +175,60 @@ function payuni_gateway_init() {
                 $this->generate_settings_html();
                 ?>
                 <script>
-                  var invalidate = function(){
-                        jQuery(this).css('border-color', 'red');
-                        jQuery('#'+this.id+'_error_msg').show();
-                        jQuery('input[type="submit"]').prop('disabled', 'disabled');
-                      },
-                      validate = function(){
+                    var invalidate = function() {
+                            jQuery(this).css('border-color', 'red');
+                            jQuery('#' + this.id + '_error_msg').show();
+                            jQuery('input[type="submit"]').prop('disabled', 'disabled');
+                        },
+                        validate = function() {
+                            jQuery(this).css('border-color', '');
+                            jQuery('#' + this.id + '_error_msg').hide();
+                            jQuery('input[type="submit"]').prop('disabled', '');
+                        }
+
+                    validate = function() {
                         jQuery(this).css('border-color', '');
-                        jQuery('#'+this.id+'_error_msg').hide();
+                        jQuery('#' + this.id + '_error_msg').hide();
                         jQuery('input[type="submit"]').prop('disabled', '');
-                      }
 
-                            validate = function () {
-                                jQuery(this).css('border-color', '');
-                                jQuery('#' + this.id + '_error_msg').hide();
-                                jQuery('input[type="submit"]').prop('disabled', '');
+                    }
 
+                    jQuery('#woocommerce_payuni_ExpireDate')
+                        .bind('keypress', function(e) {
+                            if (e.charCode < 48 || e.charCode > 57) {
+                                return false;
+                            }
+                        })
+                        .bind('blur', function(e) {
+                            if (!this.value) {
+                                validate.call(this);
+                            }
+                        });
+
+                    jQuery('#woocommerce_payuni_ExpireDate')
+                        .bind('input', function(e) {
+                            if (!this.value) {
+                                validate.call(this);
+                                return false;
                             }
 
-                    jQuery('#woocommerce_payuni_ExpireDate')
-                            .bind('keypress', function (e) {
-                                if (e.charCode < 48 || e.charCode > 57) {
-                                    return false;
-                                }
-                            })
-                            .bind('blur', function (e) {
-                                if (!this.value) {
-                                    validate.call(this);
-                                }
-                            });
+                            if (this.value < 1 || this.value > 180) {
+                                invalidate.call(this);
 
-                    jQuery('#woocommerce_payuni_ExpireDate')
-                            .bind('input', function (e) {
-                                if (!this.value) {
-                                    validate.call(this);
-                                    return false;
-                                }
-
-                                if (this.value < 1 || this.value > 180) {
-                                    invalidate.call(this);
-
-                                } else {
-                                    validate.call(this);
-                                }
-                            })
-                            .bind('blur', function (e) {
-                                if (!this.value) {
-                                    this.value = 7;
-                                    validate.call(this);
-                                }
-                            })
-                    .after('<span style="display: none;color: red;" id="woocommerce_payuni_ExpireDate_error_msg">請輸入範圍內1~180的數字</span>')
+                            } else {
+                                validate.call(this);
+                            }
+                        })
+                        .bind('blur', function(e) {
+                            if (!this.value) {
+                                this.value = 7;
+                                validate.call(this);
+                            }
+                        })
+                        .after('<span style="display: none;color: red;" id="woocommerce_payuni_ExpireDate_error_msg">請輸入範圍內1~180的數字</span>')
                 </script>
             </table><!--/.form-table-->
-            <?php
+<?php
         }
 
         /**
@@ -234,9 +240,11 @@ function payuni_gateway_init() {
          *
          * upp參數格式
          */
-        function get_payuni_args($order) {
-            return apply_filters('woocommerce_payuni_args',
-                $this->transformpayuniVersion($order,$this->version)
+        function get_payuni_args($order)
+        {
+            return apply_filters(
+                'woocommerce_payuni_args',
+                $this->transformpayuniVersion($order, $this->version)
             );
         }
 
@@ -246,7 +254,8 @@ function payuni_gateway_init() {
          * @access public
          * @return void
          */
-        function thankyou_page() {
+        function thankyou_page()
+        {
             $postData = $_REQUEST;
             $result = $this->ResultProcess($postData);
             if ($result['success'] == true) {
@@ -269,12 +278,10 @@ function payuni_gateway_init() {
                     }
                     $message = $this->SetNotice($encryptInfo);
                     echo $message;
-                }
-                else {
+                } else {
                     echo "交易失敗：" . $result['message']['Status'] . "(" . $result['message']['EncryptInfo']['Message'] . ")";
                 }
-            }
-            else {
+            } else {
                 echo "解密失敗";
             }
         }
@@ -284,7 +291,8 @@ function payuni_gateway_init() {
          * @access public
          * @return void
          */
-        function receive_response() {
+        function receive_response()
+        {
             global $woocommerce;
             $postData = $_REQUEST;
             $result = $this->ResultProcess($postData);
@@ -308,20 +316,18 @@ function payuni_gateway_init() {
                     $order->add_order_note($message);
                     switch ($encryptInfo['TradeStatus']) {
                         case '0':
-                            $order->update_status('on-hold', __( 'Awaiting cheque payment', 'woocommerce' ));
+                            $order->update_status('on-hold', __('Awaiting cheque payment', 'woocommerce'));
                             break;
                         case '1':
                             $order->payment_complete();
                             break;
                     }
-                }
-                else {
+                } else {
                     $msg = "交易失敗：" . $result['message']['Status'] . "(" . $result['message']['EncryptInfo']['Message'] . ")";
                     $this->writeLog($msg);
                     exit;
                 }
-            }
-            else {
+            } else {
                 $msg = "解密失敗";
                 $this->writeLog($msg);
                 exit;
@@ -332,8 +338,9 @@ function payuni_gateway_init() {
          * 產生訊息內容
          * return string
          */
-        private function SetNotice(Array $encryptInfo) {
-            $trdStatus = ['待付款','已付款','付款失敗','付款取消'];
+        private function SetNotice(array $encryptInfo)
+        {
+            $trdStatus = ['待付款', '已付款', '付款失敗', '付款取消'];
 
             // 訂單狀態(物流訂單需判斷是否是取貨完成)
             $shipping_final_status = isset($encryptInfo['Odno']);
@@ -343,11 +350,11 @@ function payuni_gateway_init() {
             $message .= "</br>訂單狀態：" . $status;
             $message .= "</br>UNi序號：" . $encryptInfo['TradeNo'];
 
-            switch ($encryptInfo['PaymentType']){
+            switch ($encryptInfo['PaymentType']) {
                 case '1': // 信用卡
-                    $authType = [0=>'無', 1=>'一次', 2=>'分期', 3=>'紅利', 4=>'Apple Pay', 5=>'Google Pay', 6=>'Samsung Pay', 7=>'銀聯'];
-                    $encryptInfo['AuthType'] = (array_key_exists($encryptInfo['AuthType'], $authType)) ? $encryptInfo['AuthType'] : 0 ;
-                    if ( !$shipping_final_status ) {
+                    $authType = [0 => '無', 1 => '一次', 2 => '分期', 3 => '紅利', 4 => 'Apple Pay', 5 => 'Google Pay', 6 => 'Samsung Pay', 7 => '銀聯'];
+                    $encryptInfo['AuthType'] = (array_key_exists($encryptInfo['AuthType'], $authType)) ? $encryptInfo['AuthType'] : 0;
+                    if (!$shipping_final_status) {
                         $message .= "</br>授權狀態：" . $encryptInfo['Message'];
                         $message .= "</br>卡號：" . $encryptInfo['Card6No'] . '******' . $encryptInfo['Card4No'];
                         if ($encryptInfo['CardInst'] > 1) {
@@ -382,18 +389,18 @@ function payuni_gateway_init() {
                     }
                     break;
                 case '6': // ICP 愛金卡
-                    if ( !$shipping_final_status ) {
+                    if (!$shipping_final_status) {
                         $message .= "</br>愛金卡交易序號：" . $encryptInfo['PayNo'];
                         $message .= "</br>付款日期時間：" . $encryptInfo['PayTime'];
                     }
                     break;
                 case '7': // AFTEE
-                    if ( !$shipping_final_status ) {
+                    if (!$shipping_final_status) {
                         $message .= "</br>AFTEE交易序號：" . $encryptInfo['PayNo'];
                     }
                     break;
                 case '9': // LINE Pay
-                    if ( !$shipping_final_status ) {
+                    if (!$shipping_final_status) {
                         $message .= "</br>LINE Pay交易序號：" . $encryptInfo['PayNo'];
                     }
                     break;
@@ -403,14 +410,14 @@ function payuni_gateway_init() {
 
             //物流資訊
             if (isset($encryptInfo['ShipType'])) {
-                switch ($encryptInfo['ShipType']){
+                switch ($encryptInfo['ShipType']) {
                     case '1': // SEVEN
-                        $goodsType = [1=>'常溫', 2=>'冷凍'];
-                        $serviceType = [1=>'取貨付款', 3=>'取貨不付款'];
+                        $goodsType = [1 => '常溫', 2 => '冷凍'];
+                        $serviceType = [1 => '取貨付款', 3 => '取貨不付款'];
                         $message .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
                         $message .= "</br>通路類別： 7-11";
                         $message .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
-                        if ( !$shipping_final_status ) {
+                        if (!$shipping_final_status) {
                             $message .= "</br>取件門市名稱：" . $encryptInfo['StoreName'];
                             $message .= "</br>取件門市地址：" . $encryptInfo['StoreAddr'];
                             $message .= "</br>收件人：" . $encryptInfo['Consignee'];
@@ -418,12 +425,12 @@ function payuni_gateway_init() {
                         }
                         break;
                     case '2': // 黑貓
-                        $goodsType = [1=>'常溫', 2=>'冷凍', 3=>'冷藏'];
-                        $serviceType = [1=>'取貨付款', 3=>'取貨不付款'];
+                        $goodsType = [1 => '常溫', 2 => '冷凍', 3 => '冷藏'];
+                        $serviceType = [1 => '取貨付款', 3 => '取貨不付款'];
                         $message .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
                         $message .= "</br>通路類別： 黑貓";
                         $message .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
-                        if ( !$shipping_final_status ) {
+                        if (!$shipping_final_status) {
                             $message .= "</br>收件人：" . $encryptInfo['Consignee'];
                             $message .= "</br>收件人手機號碼：" . $encryptInfo['ConsigneeMobile'];
                         }
@@ -442,14 +449,14 @@ function payuni_gateway_init() {
          * @param order $order, string $version
          * @return array
          */
-        private function transformpayuniVersion($order,$version)
+        private function transformpayuniVersion($order, $version)
         {
             switch ($version) {
                 case '1.0':
                     return $this->uppOnePointHandler($order);
-                break;
+                    break;
                 default:
-                break;
+                    break;
             }
         }
         /**
@@ -464,7 +471,7 @@ function payuni_gateway_init() {
         {
             $prodDesc = [];
             $items = $order->get_items();
-            foreach ( $items as $item ) {
+            foreach ($items as $item) {
                 $prodDesc[] = $item->get_name() . ' * ' . $item->get_quantity();
             }
 
@@ -472,7 +479,7 @@ function payuni_gateway_init() {
                 'MerID' => $this->MerchantID,
                 'MerTradeNo' => $order->get_id(),
                 'TradeAmt'  => (int) $order->get_total(),
-                'ExpireDate' => date('Y-m-d', strtotime("+".$this->ExpireDate." days")),
+                'ExpireDate' => date('Y-m-d', strtotime("+" . $this->ExpireDate . " days")),
                 'ProdDesc' => implode(';', $prodDesc),
                 'UsrMail' => $order->get_billing_email(),
                 'ReturnURL' => $this->get_return_url($order),
@@ -481,13 +488,13 @@ function payuni_gateway_init() {
             ];
 
             // 物流參數
-            foreach( $order->get_items('shipping') as $item ){
+            foreach ($order->get_items('shipping') as $item) {
                 $item_data = $item->get_data();
                 $shipping_data_method_id = $item_data['method_id'];
             }
 
             switch ($shipping_data_method_id) {
-                // 711 超商取貨(常溫、冷凍)
+                    // 711 超商取貨(常溫、冷凍)
                 case 'PAYUNi_Logistic_711':
                 case 'PAYUNi_Logistic_711_Freeze':
                     $encryptInfo['ShipTag']         = 1;
@@ -497,7 +504,7 @@ function payuni_gateway_init() {
                     $encryptInfo['Consignee']       = $order->get_shipping_last_name() . $order->get_shipping_first_name();
                     $encryptInfo['ConsigneeMobile'] = $order->get_billing_phone();
                     break;
-                // 黑貓取貨(常溫、冷凍、冷藏)
+                    // 黑貓取貨(常溫、冷凍、冷藏)
                 case 'PAYUNi_Logistic_Tcat':
                 case 'PAYUNi_Logistic_Tcat_Freeze':
                 case 'PAYUNi_Logistic_Tcat_Cold':
@@ -523,7 +530,8 @@ function payuni_gateway_init() {
          * 加密
          *
          */
-        private function Encrypt($encryptInfo) {
+        private function Encrypt($encryptInfo)
+        {
             $tag = '';
             $encrypted = openssl_encrypt(http_build_query($encryptInfo), 'aes-256-gcm', trim($this->HashKey), 0, trim($this->HashIV), $tag);
             return trim(bin2hex($encrypted . ':::' . base64_encode($tag)));
@@ -531,7 +539,8 @@ function payuni_gateway_init() {
         /**
          * 解密
          */
-        private function Decrypt(string $encryptStr = '') {
+        private function Decrypt(string $encryptStr = '')
+        {
             list($encryptData, $tag) = explode(':::', hex2bin($encryptStr), 2);
             $encryptInfo = openssl_decrypt($encryptData, 'aes-256-gcm', trim($this->HashKey), 0, trim($this->HashIV), base64_decode($tag));
             parse_str($encryptInfo, $encryptArr);
@@ -540,45 +549,44 @@ function payuni_gateway_init() {
         /**
          * hash
          */
-        private function HashInfo(string $encryptStr = '') {
-            return strtoupper(hash('sha256', $this->HashKey.$encryptStr.$this->HashIV));
+        private function HashInfo(string $encryptStr = '')
+        {
+            return strtoupper(hash('sha256', $this->HashKey . $encryptStr . $this->HashIV));
         }
         /**
          * 處理api回傳的結果
          * @ author    Yifan
          * @ dateTime 2022-08-26
          */
-        private function ResultProcess($result) {
+        private function ResultProcess($result)
+        {
             $msg = '';
             if (is_array($result)) {
                 $resultArr = $result;
-            }
-            else {
+            } else {
                 $resultArr = json_decode($result, true);
-                if (!is_array($resultArr)){
+                if (!is_array($resultArr)) {
                     $msg = 'Result must be an array';
                     $this->writeLog($msg);
                     return ['success' => false, 'message' => $msg];
                 }
             }
-            if (isset($resultArr['EncryptInfo'])){
-                if (isset($resultArr['HashInfo'])){
+            if (isset($resultArr['EncryptInfo'])) {
+                if (isset($resultArr['HashInfo'])) {
                     $chkHash = $this->HashInfo($resultArr['EncryptInfo']);
-                    if ( $chkHash != $resultArr['HashInfo'] ) {
+                    if ($chkHash != $resultArr['HashInfo']) {
                         $msg = 'Hash mismatch';
                         $this->writeLog($msg);
                         return ['success' => false, 'message' => $msg];
                     }
                     $resultArr['EncryptInfo'] = $this->Decrypt($resultArr['EncryptInfo']);
                     return ['success' => true, 'message' => $resultArr];
-                }
-                else {
+                } else {
                     $msg = 'missing HashInfo';
                     $this->writeLog($msg);
                     return ['success' => false, 'message' => $msg];
                 }
-            }
-            else {
+            } else {
                 $msg = 'missing EncryptInfo';
                 $this->writeLog($msg);
                 return ['success' => false, 'message' => $msg];
@@ -591,7 +599,8 @@ function payuni_gateway_init() {
          * @param mixed $order_id
          * @return string
          */
-        function generate_payuni_form($order_id) {
+        function generate_payuni_form($order_id)
+        {
             $order = wc_get_order($order_id);
             $payuni_args = $this->get_payuni_args($order);
             $payuni_gateway = $this->gateway;
@@ -602,7 +611,7 @@ function payuni_gateway_init() {
 
             return '<form id="payuni" name="payuni" action="' . $payuni_gateway . '" method="post" target="_top">' . implode('', $payuni_args_array) . '
                 <input type="submit" class="button-alt" id="submit_payuni_payment_form" value="' . __('前往 統一金流 PAYUNi 支付頁面', 'payuni') . '" />
-                </form>'. "<script>setTimeout(\"document.forms['payuni'].submit();\",\"0\")</script>";
+                </form>' . "<script>setTimeout(\"document.forms['payuni'].submit();\",\"0\")</script>";
         }
 
         /**
@@ -611,14 +620,15 @@ function payuni_gateway_init() {
          * @access public
          * @return void
          */
-        function receipt_page($order) {
+        function receipt_page($order)
+        {
             echo '<p>' . __('3秒後會自動跳轉到統一金流支付頁面，或者按下方按鈕直接前往<br>', 'payuni') . '</p>';
             echo $this->generate_payuni_form($order);
         }
         private function writeLog($msg = '', $with_input = true)
         {
-            $file_path = __DIR__ .'/payuni_logs/'; // 檔案路徑
-            if(! is_dir($file_path)) {
+            $file_path = __DIR__ . '/payuni_logs/'; // 檔案路徑
+            if (!is_dir($file_path)) {
                 return;
             }
 
@@ -632,7 +642,8 @@ function payuni_gateway_init() {
             $this->clean_old_log($file_path);
         }
 
-        private function clean_old_log($dir = '') {
+        private function clean_old_log($dir = '')
+        {
             $del_date = date('Ymd', strtotime('-30 day'));
             $scan_dir = glob($dir . 'payuni_*.txt');
             foreach ($scan_dir as $value) {
@@ -649,7 +660,8 @@ function payuni_gateway_init() {
          * @param int $order_id
          * @return array
          */
-        function process_payment($order_id) {
+        function process_payment($order_id)
+        {
             global $woocommerce;
             $order = wc_get_order($order_id);
 
@@ -668,7 +680,8 @@ function payuni_gateway_init() {
          * @access public
          * @return void
          */
-        function payment_fields() {
+        function payment_fields()
+        {
             if ($this->description)
                 echo wpautop(wptexturize($this->description));
         }
@@ -681,11 +694,41 @@ function payuni_gateway_init() {
      * @package     WooCommerce/Classes/Payment
      * @return array
      */
-    function add_payuni_gateway($methods) {
+    function add_payuni_gateway($methods)
+    {
         $methods[] = 'WC_payuni';
         return $methods;
     }
 
     add_filter('woocommerce_payment_gateways', 'add_payuni_gateway');
+    function payuni_shipping_filter($rates, $package)
+    {
+        $type = [];
+        foreach ($package['contents'] as $key => $value) {
+            if ('no711' == $value['data']->get_shipping_class()) {
+                $type[] = 'no711';
+            }
+            if ('nocat' == $value['data']->get_shipping_class()) {
+                $type[] = 'nocat';
+            }
+        }
+        if (in_array('no711', $type)) {
+            foreach ($rates as $key => $method) {
+                if (strpos($method->method_id, 'PAYUNi_Logistic_711') !== false) {
+                    unset($rates[$key]);
+                }
+            }
+        }
+        if (in_array('nocat', $type)) {
+            foreach ($rates as $key => $method) {
+                if (strpos($method->method_id, 'PAYUNi_Logistic_Tcat') !== false) {
+                    unset($rates[$key]);
+                }
+            }
+        }
+
+        return $rates;
+    }
+    add_filter('woocommerce_package_rates', 'payuni_shipping_filter', 10, 2);
 }
 ?>
