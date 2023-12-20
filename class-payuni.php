@@ -79,7 +79,7 @@ function payuni_gateway_init()
 
             // Actions
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
-            add_action('woocommerce_thankyou_' . $this->id, array($this, 'thankyou_page'));
+            add_action('woocommerce_thankyou', array($this, 'thankyou_page'));
             add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
             add_action('woocommerce_api_wc_' . $this->id, array($this, 'receive_response')); //api_"class名稱(小寫)"
         }
@@ -313,7 +313,7 @@ function payuni_gateway_init()
                         exit;
                     }
                     $message = $this->SetNotice($encryptInfo);
-                    $order->add_order_note($message);
+                    $order->add_order_note($message, 1);
                     switch ($encryptInfo['TradeStatus']) {
                         case '0':
                             $order->update_status('on-hold', __('Awaiting cheque payment', 'woocommerce'));
