@@ -508,13 +508,14 @@ function payuni_gateway_init()
                 case 'PAYUNi_Logistic_Tcat':
                 case 'PAYUNi_Logistic_Tcat_Freeze':
                 case 'PAYUNi_Logistic_Tcat_Cold':
-                    $encryptInfo['ShipTag']          = 1;
-                    $encryptInfo['ShipType']         = 2;
-                    $encryptInfo['LgsType']          = 'HOME';
-                    $encryptInfo['GoodsType']        = $this->shippingGoodsType[$shipping_data_method_id];
-                    $encryptInfo['Consignee']        = $order->get_shipping_last_name() . $order->get_shipping_first_name();
-                    $encryptInfo['ConsigneeMobile']  = $order->get_billing_phone();
-                    // $encryptInfo['ConsigneeAddress'] = $order->get_shipping_state() . $order->get_shipping_city() . $order->get_shipping_address_1() . $order->get_shipping_address_2();
+                    $encryptInfo['ShipTag']             = 1;
+                    $encryptInfo['ShipType']            = 2;
+                    $encryptInfo['LgsType']             = 'HOME';
+                    $encryptInfo['GoodsType']           = $this->shippingGoodsType[$shipping_data_method_id];
+                    $encryptInfo['Consignee']           = $order->get_shipping_last_name() . $order->get_shipping_first_name();
+                    $encryptInfo['ConsigneeMobile']     = $order->get_billing_phone();
+                    $encryptInfo['ConsigneeAddress']    = $order->get_shipping_state() . $order->get_shipping_city() . $order->get_shipping_address_1() . $order->get_shipping_address_2();
+                    $encryptInfo['ConsigneeAddressFix'] = 1;
                     break;
                 default:
                     break;
