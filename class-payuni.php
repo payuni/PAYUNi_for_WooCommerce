@@ -470,6 +470,7 @@ function payuni_gateway_init()
         private function uppOnePointHandler($order)
         {
             $prodDesc = [];
+            $shipping_data_method_id = '';
             $items = $order->get_items();
             foreach ($items as $item) {
                 $prodDesc[] = $item->get_name() . ' * ' . $item->get_quantity();
