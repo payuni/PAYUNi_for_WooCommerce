@@ -153,6 +153,101 @@ function payuni_gateway_init()
                         'B2C' => __('B2C', 'CvsType', 'woocommerce'),
                     ]
                 ),
+                'PaymentSettings' => array(
+                    'title' => __('支付設定', 'woocommerce'),
+                    'type' => 'title',
+                ),
+                'Credit' => array(
+                    'title' => __('信用卡一次付清', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟信用卡一次付清", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'ICash' => array(
+                    'title' => __('ICash Pay', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟ICash Pay", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'Aftee' => array(
+                    'title' => __('AFTEE先享後付', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟AFTEE先享後付", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'LinePay' => array(
+                    'title' => __('LINE Pay', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟LINE Pay", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'ATM' => array(
+                    'title' => __('虛擬帳號支付', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟虛擬帳號支付", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'CVS' => array(
+                    'title' => __('超商代碼/條碼支付', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟超商代碼/條碼支付", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'CreditUnionPay' => array(
+                    'title' => __('信用卡(銀聯)支付', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟信用卡(銀聯)支付", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'CreditRed' => array(
+                    'title' => __('信用卡(紅利)支付', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟信用卡(紅利)支付", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'CreditInst' => array(
+                    'title' => __('信用卡分期支付', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟信用卡分期支付", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'ApplePay' => array(
+                    'title' => __('Apple Pay', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟Apple Pay", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'GooglePay' => array(
+                    'title' => __('Google Pay™', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟Google Pay™", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'SamsungPay' => array(
+                    'title' => __('Samsung Pay', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟Samsung Pay", 'woocommerce'),
+                    'default' => 'yes'
+                ),
+                'Ship' => array(
+                    'title' => __('貨到付款', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟貨到付款", 'woocommerce'),
+                    'default' => 'yes'
+                ),
             );
         }
 
@@ -493,7 +588,15 @@ function payuni_gateway_init()
                 $item_data = $item->get_data();
                 $shipping_data_method_id = $item_data['method_id'];
             }
-
+            $paymentArr = [
+                'Credit', 'ICash', 'Aftee', 'LinePay', 'ATM', 'CVS', 'CreditUnionPay',
+                'CreditRed', 'CreditInst', 'ApplePay', 'GooglePay', 'SamsungPay', 'Ship'
+            ];
+            foreach ($paymentArr as $payment) {
+                if ($this->settings[$payment] == 'yes') {
+                    $encryptInfo[$payment] = 1;
+                }
+            }
             switch ($shipping_data_method_id) {
                     // 711 超商取貨(常溫、冷凍)
                 case 'PAYUNi_Logistic_711':
