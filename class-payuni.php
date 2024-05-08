@@ -590,7 +590,7 @@ function payuni_gateway_init()
             }
             $paymentArr = [
                 'Credit', 'ICash', 'Aftee', 'LinePay', 'ATM', 'CVS', 'CreditUnionPay',
-                'CreditRed', 'CreditInst', 'ApplePay', 'GooglePay', 'SamsungPay', 'Ship'
+                'CreditRed', 'CreditInst', 'ApplePay', 'GooglePay', 'SamsungPay'
             ];
             foreach ($paymentArr as $payment) {
                 if ($this->settings[$payment] == 'yes') {
@@ -601,6 +601,9 @@ function payuni_gateway_init()
                     // 711 超商取貨(常溫、冷凍)
                 case 'PAYUNi_Logistic_711':
                 case 'PAYUNi_Logistic_711_Freeze':
+                    if ($this->settings['Ship'] == 'yes') {
+                        $encryptInfo['Ship'] = 1;
+                    }
                     $encryptInfo['ShipTag']         = 1;
                     $encryptInfo['ShipType']        = 1;
                     $encryptInfo['LgsType']         = trim($this->settings['CvsType']);
@@ -612,6 +615,9 @@ function payuni_gateway_init()
                 case 'PAYUNi_Logistic_Tcat':
                 case 'PAYUNi_Logistic_Tcat_Freeze':
                 case 'PAYUNi_Logistic_Tcat_Cold':
+                    if ($this->settings['Ship'] == 'yes') {
+                        $encryptInfo['Ship'] = 1;
+                    }
                     $encryptInfo['ShipTag']             = 1;
                     $encryptInfo['ShipType']            = 2;
                     $encryptInfo['LgsType']             = 'HOME';
