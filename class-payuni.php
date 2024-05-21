@@ -70,6 +70,12 @@ function payuni_gateway_init()
                 'PAYUNi_Logistic_Tcat_Cold'   => 3,
             ];
 
+            // 支付方式
+            $this->paymentArr = [
+                'Credit', 'ICash', 'Aftee', 'LinePay', 'ATM', 'CVS', 'CreditUnionPay',
+                'CreditRed', 'CreditInst', 'ApplePay', 'GooglePay', 'SamsungPay'
+            ];
+
             // Test Mode
             if ($this->TestMode == 'yes') {
                 $this->gateway = "https://sandbox-api.payuni.com.tw/api/upp"; //測試網址
@@ -139,6 +145,15 @@ function payuni_gateway_init()
                     'label' => __('啟動測試模組', 'woocommerce'),
                     'description' => __("選擇是否開啟測試模式", 'woocommerce'),
                     'default' => 'yes'
+                ),
+                'LangSettings' => array(
+                    'title' => __('支付頁語系', 'woocommerce'),
+                    'type' => 'select',
+                    'default' => 'zh-tw',
+                    'options' => [
+                        'zh-tw' => __('zh-tw', 'LangSettings', 'woocommerce'),
+                        'en'    => __('en', 'LangSettings', 'woocommerce'),
+                    ]
                 ),
                 'LogisticSettings' => array(
                     'title' => __('物流設定', 'woocommerce'),
@@ -572,15 +587,16 @@ function payuni_gateway_init()
             }
 
             $encryptInfo = [
-                'MerID' => $this->MerchantID,
+                'MerID'      => $this->MerchantID,
                 'MerTradeNo' => $order->get_id(),
-                'TradeAmt'  => (int) $order->get_total(),
+                'TradeAmt'   => (int) $order->get_total(),
                 'ExpireDate' => date('Y-m-d', strtotime("+" . $this->ExpireDate . " days")),
-                'ProdDesc' => implode(';', $prodDesc),
-                'UsrMail' => $order->get_billing_email(),
-                'ReturnURL' => $this->get_return_url($order),
-                "NotifyURL" => $this->notify_url, //幕後
-                'Timestamp' => time()
+                'ProdDesc'   => implode(';', $prodDesc),
+                'UsrMail'    => $order->get_billing_email(),
+                'ReturnURL'  => $this->get_return_url($order),
+                "NotifyURL"  => $this->notify_url, //幕後
+                "Lang"       => $this->settings['LangSettings'],
+                'Timestamp'  => time()
             ];
 
             // 物流參數
@@ -588,11 +604,8 @@ function payuni_gateway_init()
                 $item_data = $item->get_data();
                 $shipping_data_method_id = $item_data['method_id'];
             }
-            $paymentArr = [
-                'Credit', 'ICash', 'Aftee', 'LinePay', 'ATM', 'CVS', 'CreditUnionPay',
-                'CreditRed', 'CreditInst', 'ApplePay', 'GooglePay', 'SamsungPay'
-            ];
-            foreach ($paymentArr as $payment) {
+
+            foreach ($this->paymentArr as $payment) {
                 if ($this->settings[$payment] == 'yes') {
                     $encryptInfo[$payment] = 1;
                 }
