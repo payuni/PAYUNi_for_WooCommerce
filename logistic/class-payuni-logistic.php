@@ -22,7 +22,7 @@ class WC_PAYUNi_Logistic {
 
     // 塞入物流方式
     public function insert_shipping_methods($methods)
-    {   
+    {
         $methods['PAYUNi_Logistic_711'] = 'PAYUNi_Logistic_711';
         $methods['PAYUNi_Logistic_711_Freeze'] = 'PAYUNi_Logistic_711_Freeze';
         $methods['PAYUNi_Logistic_Tcat'] = 'PAYUNi_Logistic_Tcat';
@@ -52,9 +52,9 @@ class WC_PAYUNi_Logistic {
                 if($total >= 20000){
                     $payment_gateways['payuni']->description .= '<p class="woocommerce-notice woocommerce-notice--info woocommerce-info">訂單總金額超過2萬元，將無法使用貨到付款。</p>';
                 }
-                // 結帳總金額檢查(低於30元提示訊息)
-                if($total <= 30){
-                    $payment_gateways['payuni']->description .= '<p class="woocommerce-notice woocommerce-notice--info woocommerce-info">訂單總金額低於30元，將無法使用貨到付款。</p>';
+                // 結帳總金額檢查(低於1元提示訊息)
+                if($total <= 1){
+                    $payment_gateways['payuni']->description .= '<p class="woocommerce-notice woocommerce-notice--info woocommerce-info">訂單總金額低於1元，將無法使用貨到付款。</p>';
                 }
             }
         }
