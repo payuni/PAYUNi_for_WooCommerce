@@ -685,6 +685,7 @@ function payuni_gateway_init()
         private function ResultProcess($result)
         {
             $msg = '';
+            $this->writeLog('ResponseData');
             if (is_array($result)) {
                 $resultArr = $result;
             } else {
