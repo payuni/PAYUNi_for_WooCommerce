@@ -72,8 +72,19 @@ function payuni_gateway_init()
 
             // 支付方式
             $this->paymentArr = [
-                'Credit', 'ICash', 'Aftee', 'LinePay', 'ATM', 'CVS', 'CreditUnionPay',
-                'CreditRed', 'CreditInst', 'ApplePay', 'GooglePay', 'SamsungPay'
+                'Credit',
+                'ICash',
+                'Aftee',
+                'LinePay',
+                'ATM',
+                'CVS',
+                'CreditUnionPay',
+                'CreditRed',
+                'CreditInst',
+                'ApplePay',
+                'GooglePay',
+                'SamsungPay',
+                'TradeInvoice', // 電子發票是否開啟
             ];
 
             // Test Mode
@@ -262,6 +273,13 @@ function payuni_gateway_init()
                     'label' => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟貨到付款", 'woocommerce'),
                     'default' => 'yes'
+                ),
+                'TradeInvoice' => array(
+                    'title' => __('電子發票', 'woocommerce'),
+                    'type' => 'checkbox',
+                    'label' => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟電子發票", 'woocommerce'),
+                    'default' => 'no'
                 ),
             );
         }
@@ -606,7 +624,7 @@ function payuni_gateway_init()
             }
 
             foreach ($this->paymentArr as $payment) {
-                if ($this->settings[$payment] == 'yes') {
+                if (isset($this->settings[$payment]) && $this->settings[$payment] == 'yes') {
                     $encryptInfo[$payment] = 1;
                 }
             }
@@ -810,6 +828,25 @@ function payuni_gateway_init()
             if ($this->description)
                 echo wpautop(wptexturize($this->description));
         }
+        /**
+         * Plugin url.
+         *
+         * @return string
+         */
+        static function plugin_url()
+        {
+            return untrailingslashit(plugins_url('/', __FILE__));
+        }
+
+        /**
+         * Plugin url.
+         *
+         * @return string
+         */
+        static function plugin_abspath()
+        {
+            return trailingslashit(plugin_dir_path(__FILE__));
+        }
     }
     /**
      * Add the gateway to WooCommerce
@@ -855,5 +892,19 @@ function payuni_gateway_init()
         return $rates;
     }
     add_filter('woocommerce_package_rates', 'payuni_shipping_filter', 10, 2);
+
+    function payuni_block_support()
+    {
+        if (class_exists('Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType')) {
+            require_once 'blocks/class-wc-payuni-payments-blocks.php';
+            add_action(
+                'woocommerce_blocks_payment_method_type_registration',
+                function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry) {
+                    $payment_method_registry->register(new WC_Gateway_Payuni_Blocks_Support());
+                }
+            );
+        }
+    }
+    add_action('woocommerce_blocks_loaded', 'payuni_block_support');
 }
 ?>
