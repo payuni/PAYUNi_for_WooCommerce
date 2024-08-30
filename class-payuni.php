@@ -60,6 +60,7 @@ function payuni_gateway_init()
             $this->ExpireDate  = $this->settings['ExpireDate'];
             $this->TestMode    = $this->settings['TestMode'];
             $this->notify_url  = add_query_arg('wc-api', 'WC_payuni', home_url('/'));
+            $this->return_url  = add_query_arg('wc-api', 'return_payuni', home_url('/'));
 
             // 物流溫層
             $this->shippingGoodsType = [
@@ -99,6 +100,7 @@ function payuni_gateway_init()
             add_action('woocommerce_thankyou', array($this, 'thankyou_page'));
             add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
             add_action('woocommerce_api_wc_' . $this->id, array($this, 'receive_response')); //api_"class名稱(小寫)"
+            add_action('woocommerce_api_return_' . $this->id, array($this, 'get_payunireturn')); //api_"class名稱(小寫)"
         }
 
         /**
@@ -384,6 +386,7 @@ function payuni_gateway_init()
          */
         function thankyou_page()
         {
+            $this->writeLog('thankyou_page');
             $postData = $_REQUEST;
             $result = $this->ResultProcess($postData);
             if ($result['success'] == true) {
@@ -411,6 +414,34 @@ function payuni_gateway_init()
                 }
             } else {
                 echo "解密失敗";
+            }
+        }
+        function get_payunireturn()
+        {
+            $this->writeLog('get_payunireturn');
+            if (empty($_POST)) {
+                return;
+            }
+            $postData = $_POST;
+            $result = $this->ResultProcess($postData);
+            if ($result['success'] == true) {
+                // if (in_array($result['message']['Status'], array('SUCCESS', 'OK'))) {
+                if (!empty($result['message']['Status'])) {
+                    $encryptInfo = $result['message']['EncryptInfo'];
+                    $order = wc_get_order($encryptInfo['MerTradeNo']);
+                    if (is_array($postData)) {
+                        $resultArr = $postData;
+                    } else {
+                        $resultArr = json_decode($postData, true);
+                    }
+                    $thankPage = add_query_arg('EncryptInfo', $resultArr['EncryptInfo'], $order->get_checkout_order_received_url());
+                    $thankPage = add_query_arg('HashInfo', $resultArr['HashInfo'], $thankPage);
+                    // $thankPage = add_query_arg('Status', $resultArr['Status'], $thankPage);
+                }
+                wp_safe_redirect($thankPage);
+                exit;
+            } else {
+                return;
             }
         }
         /**
@@ -611,7 +642,8 @@ function payuni_gateway_init()
                 'ExpireDate' => date('Y-m-d', strtotime("+" . $this->ExpireDate . " days")),
                 'ProdDesc'   => implode(';', $prodDesc),
                 'UsrMail'    => $order->get_billing_email(),
-                'ReturnURL'  => $this->get_return_url($order),
+                // 'ReturnURL'  => $this->get_return_url($order),
+                'ReturnURL'  => $this->return_url,
                 "NotifyURL"  => $this->notify_url, //幕後
                 "Lang"       => $this->settings['LangSettings'],
                 'Timestamp'  => time()
@@ -723,6 +755,9 @@ function payuni_gateway_init()
                         return ['success' => false, 'message' => $msg];
                     }
                     $resultArr['EncryptInfo'] = $this->Decrypt($resultArr['EncryptInfo']);
+                    if (empty($resultArr['Status'])) {
+                        $resultArr['Status'] = $resultArr['EncryptInfo']['Status'];
+                    }
                     return ['success' => true, 'message' => $resultArr];
                 } else {
                     $msg = 'missing HashInfo';
