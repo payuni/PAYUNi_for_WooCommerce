@@ -25,6 +25,17 @@ function payuni_gateway_init()
 
     class WC_payuni extends WC_Payment_Gateway
     {
+        public $version;
+        public $MerchantID;
+        public $HashKey;
+        public $HashIV;
+        public $ExpireDate;
+        public $TestMode;
+        public $notify_url;
+        public $return_url;
+        public $shippingGoodsType;
+        public $paymentArr;
+        public $gateway;
         /**
          * Constructor for the gateway.
          *

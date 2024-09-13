@@ -2,10 +2,14 @@
 
 class PAYUNi_Logistic extends WC_Shipping_Method
 {
-     public function __construct($instance_id)
+    public $cost;
+    public $cost_requires;
+    public $min_amount;
+    public $coupon_check;
+    public function __construct($instance_id)
     {
         $this->instance_id          = absint($instance_id);
-        $this->instance_form_fields = include plugin_dir_path( __FILE__ ) . '/payuni-logistic-config.php';
+        $this->instance_form_fields = include plugin_dir_path(__FILE__) . '/payuni-logistic-config.php';
 
         $this->init_settings();
 
@@ -23,7 +27,7 @@ class PAYUNi_Logistic extends WC_Shipping_Method
             'instance-settings-modal',
         ];
 
-        add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
+        add_action('woocommerce_update_options_shipping_' . $this->id, array($this, 'process_admin_options'));
     }
 
     public function calculate_shipping($package = [])
@@ -56,19 +60,19 @@ class PAYUNi_Logistic extends WC_Shipping_Method
 
         $min_amount_condition = ($total >= $this->min_amount);
 
-        if ( $this->cost_requires == 'coupon') {
+        if ($this->cost_requires == 'coupon') {
             return $has_coupon;
         }
 
-        if ( $this->cost_requires == 'min_amount') {
+        if ($this->cost_requires == 'min_amount') {
             return $min_amount_condition;
         }
 
-        if ( $this->cost_requires == 'either') {
+        if ($this->cost_requires == 'either') {
             return $has_coupon || $min_amount_condition;
         }
-        
-        if ( $this->cost_requires == 'both' ) {
+
+        if ($this->cost_requires == 'both') {
             return $has_coupon && $min_amount_condition;
         }
 
@@ -77,17 +81,17 @@ class PAYUNi_Logistic extends WC_Shipping_Method
 
     private function has_coupon()
     {
-        if ( !in_array( $this->cost_requires, $this->coupon_check) ) {
+        if (!in_array($this->cost_requires, $this->coupon_check)) {
             return false;
         }
 
         $coupons = WC()->cart->get_coupons();
-        if ( empty($coupons) ) {
+        if (empty($coupons)) {
             return false;
         }
 
-        foreach ( $coupons as $coupon ) {
-            if ( $coupon->is_valid() && $coupon->get_free_shipping() ) {
+        foreach ($coupons as $coupon) {
+            if ($coupon->is_valid() && $coupon->get_free_shipping()) {
                 return true;
             }
         }
