@@ -49,10 +49,10 @@ function payuni_gateway_init()
                 $_POST['woocommerce_payuni_ExpireDate'] = 7;
             }
 
-            $this->id   = 'payuni';
-            $this->icon = apply_filters('woocommerce_payuni_icon', plugins_url('icon/payuni_65_yb.png', __FILE__));
-            $this->has_fields = false;
-            $this->method_title = __('統一金流 PAYUNi', 'woocommerce');
+            $this->id                 = 'payuni';
+            $this->icon               = apply_filters('woocommerce_payuni_icon', plugins_url('icon/payuni_65_yb.png', __FILE__));
+            $this->has_fields         = false;
+            $this->method_title       = __('統一金流 PAYUNi', 'woocommerce');
             $this->method_description = '使用統一金流 PAYUNi付款，整合各式金流付款工具，並提供信託價金保管，付款更安心。';
 
             // Load the form fields.
@@ -124,55 +124,55 @@ function payuni_gateway_init()
         function init_form_fields()
         {
             $this->form_fields = array(
-                'enabled' => array(
-                    'title' => __('啟用/關閉', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動 統一金流 整合式支付模組', 'woocommerce'),
+                'enabled'          => array(
+                    'title'   => __('啟用/關閉', 'woocommerce'),
+                    'type'    => 'checkbox',
+                    'label'   => __('啟動 統一金流 整合式支付模組', 'woocommerce'),
                     'default' => 'yes'
                 ),
-                'title' => array(
-                    'title' => __('標題', 'woocommerce'),
-                    'type' => 'text',
+                'title'            => array(
+                    'title'       => __('標題', 'woocommerce'),
+                    'type'        => 'text',
                     'description' => __('', 'woocommerce'),
-                    'default' => __('統一金流 PAYUNi', 'woocommerce')
+                    'default'     => __('統一金流 PAYUNi', 'woocommerce')
                 ),
-                'description' => array(
-                    'title' => __('描述', 'woocommerce'),
-                    'type' => 'textarea',
+                'description'      => array(
+                    'title'       => __('描述', 'woocommerce'),
+                    'type'        => 'textarea',
                     'description' => __('', 'woocommerce'),
-                    'default' => __('您將前往統一金流 PAYUNi支付頁面，整合各式金流付款工具，並提供信託價金保管，付款更安心。', 'woocommerce')
+                    'default'     => __('您將前往統一金流 PAYUNi支付頁面，整合各式金流付款工具，並提供信託價金保管，付款更安心。', 'woocommerce')
                 ),
-                'MerchantID' => array(
-                    'title' => __('統一金流 商店代號', 'woocommerce'),
-                    'type' => 'text',
+                'MerchantID'       => array(
+                    'title'       => __('統一金流 商店代號', 'woocommerce'),
+                    'type'        => 'text',
                     'description' => __('請填入您的統一金流的商店代號', 'woocommerce')
                 ),
-                'HashKey' => array(
-                    'title' => __('統一金流 Hash Key', 'woocommerce'),
-                    'type' => 'text',
+                'HashKey'          => array(
+                    'title'       => __('統一金流 Hash Key', 'woocommerce'),
+                    'type'        => 'text',
                     'description' => __('請填入您的統一金流的Hash Key', 'woocommerce')
                 ),
-                'HashIV' => array(
-                    'title' => __('統一金流 IV Key', 'woocommerce'),
-                    'type' => 'text',
+                'HashIV'           => array(
+                    'title'       => __('統一金流 IV Key', 'woocommerce'),
+                    'type'        => 'text',
                     'description' => __("請填入您的統一金流的IV Key", 'woocommerce')
                 ),
-                'ExpireDate' => array(
-                    'title' => __('繳費有效期限(天)', 'woocommerce'),
-                    'type' => 'text',
+                'ExpireDate'       => array(
+                    'title'       => __('繳費有效期限(天)', 'woocommerce'),
+                    'type'        => 'text',
                     'description' => __("請設定繳費有效期限(1~180天), 預設為7天", 'woocommerce'),
-                    'default' => 7
+                    'default'     => 7
                 ),
-                'TestMode' => array(
-                    'title' => __('測試模組', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動測試模組', 'woocommerce'),
+                'TestMode'         => array(
+                    'title'       => __('測試模組', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動測試模組', 'woocommerce'),
                     'description' => __("選擇是否開啟測試模式", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'LangSettings' => array(
-                    'title' => __('支付頁語系', 'woocommerce'),
-                    'type' => 'select',
+                'LangSettings'     => array(
+                    'title'   => __('支付頁語系', 'woocommerce'),
+                    'type'    => 'select',
                     'default' => 'zh-tw',
                     'options' => [
                         'zh-tw' => __('zh-tw', 'LangSettings', 'woocommerce'),
@@ -181,118 +181,118 @@ function payuni_gateway_init()
                 ),
                 'LogisticSettings' => array(
                     'title' => __('物流設定', 'woocommerce'),
-                    'type' => 'title',
+                    'type'  => 'title',
                 ),
-                'CvsType' => array(
-                    'title' => __('超商取貨類型', 'woocommerce'),
-                    'type' => 'select',
+                'CvsType'          => array(
+                    'title'   => __('超商取貨類型', 'woocommerce'),
+                    'type'    => 'select',
                     'default' => 'C2C',
                     'options' => [
                         'C2C' => __('C2C', 'CvsType', 'woocommerce'),
                         'B2C' => __('B2C', 'CvsType', 'woocommerce'),
                     ]
                 ),
-                'PaymentSettings' => array(
+                'PaymentSettings'  => array(
                     'title' => __('支付設定', 'woocommerce'),
-                    'type' => 'title',
+                    'type'  => 'title',
                 ),
-                'Credit' => array(
-                    'title' => __('信用卡一次付清', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'Credit'           => array(
+                    'title'       => __('信用卡一次付清', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟信用卡一次付清", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'ICash' => array(
-                    'title' => __('ICash Pay', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'ICash'            => array(
+                    'title'       => __('ICash Pay', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟ICash Pay", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'Aftee' => array(
-                    'title' => __('AFTEE先享後付', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'Aftee'            => array(
+                    'title'       => __('AFTEE先享後付', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟AFTEE先享後付", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'LinePay' => array(
-                    'title' => __('LINE Pay', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'LinePay'          => array(
+                    'title'       => __('LINE Pay', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟LINE Pay", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'ATM' => array(
-                    'title' => __('虛擬帳號支付', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'ATM'              => array(
+                    'title'       => __('虛擬帳號支付', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟虛擬帳號支付", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'CVS' => array(
-                    'title' => __('超商代碼/條碼支付', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'CVS'              => array(
+                    'title'       => __('超商代碼/條碼支付', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟超商代碼/條碼支付", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'CreditUnionPay' => array(
-                    'title' => __('信用卡(銀聯)支付', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'CreditUnionPay'   => array(
+                    'title'       => __('信用卡(銀聯)支付', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟信用卡(銀聯)支付", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'CreditRed' => array(
-                    'title' => __('信用卡(紅利)支付', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'CreditRed'        => array(
+                    'title'       => __('信用卡(紅利)支付', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟信用卡(紅利)支付", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'CreditInst' => array(
-                    'title' => __('信用卡分期支付', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'CreditInst'       => array(
+                    'title'       => __('信用卡分期支付', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟信用卡分期支付", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'ApplePay' => array(
-                    'title' => __('Apple Pay', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'ApplePay'         => array(
+                    'title'       => __('Apple Pay', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟Apple Pay", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'GooglePay' => array(
-                    'title' => __('Google Pay™', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'GooglePay'        => array(
+                    'title'       => __('Google Pay™', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟Google Pay™", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'SamsungPay' => array(
-                    'title' => __('Samsung Pay', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'SamsungPay'       => array(
+                    'title'       => __('Samsung Pay', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟Samsung Pay", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'Ship' => array(
-                    'title' => __('貨到付款', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'Ship'             => array(
+                    'title'       => __('貨到付款', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟貨到付款", 'woocommerce'),
-                    'default' => 'yes'
+                    'default'     => 'yes'
                 ),
-                'TradeInvoice' => array(
-                    'title' => __('電子發票', 'woocommerce'),
-                    'type' => 'checkbox',
-                    'label' => __('啟動', 'woocommerce'),
+                'TradeInvoice'     => array(
+                    'title'       => __('電子發票', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟電子發票", 'woocommerce'),
-                    'default' => 'no'
+                    'default'     => 'no'
                 ),
             );
         }
@@ -307,7 +307,7 @@ function payuni_gateway_init()
         public function admin_options()
         {
 
-?>
+            ?>
             <h3><?php _e('統一金流 整合式支付模組', 'woocommerce'); ?></h3>
             <p><?php _e('此模組可以讓您使用統一金流的整合式支付功能', 'woocommerce'); ?></p>
             <table class="form-table">
@@ -316,18 +316,18 @@ function payuni_gateway_init()
                 $this->generate_settings_html();
                 ?>
                 <script>
-                    var invalidate = function() {
-                            jQuery(this).css('border-color', 'red');
-                            jQuery('#' + this.id + '_error_msg').show();
-                            jQuery('input[type="submit"]').prop('disabled', 'disabled');
-                        },
-                        validate = function() {
+                    var invalidate = function () {
+                        jQuery(this).css('border-color', 'red');
+                        jQuery('#' + this.id + '_error_msg').show();
+                        jQuery('input[type="submit"]').prop('disabled', 'disabled');
+                    },
+                        validate = function () {
                             jQuery(this).css('border-color', '');
                             jQuery('#' + this.id + '_error_msg').hide();
                             jQuery('input[type="submit"]').prop('disabled', '');
                         }
 
-                    validate = function() {
+                    validate = function () {
                         jQuery(this).css('border-color', '');
                         jQuery('#' + this.id + '_error_msg').hide();
                         jQuery('input[type="submit"]').prop('disabled', '');
@@ -335,19 +335,19 @@ function payuni_gateway_init()
                     }
 
                     jQuery('#woocommerce_payuni_ExpireDate')
-                        .bind('keypress', function(e) {
+                        .bind('keypress', function (e) {
                             if (e.charCode < 48 || e.charCode > 57) {
                                 return false;
                             }
                         })
-                        .bind('blur', function(e) {
+                        .bind('blur', function (e) {
                             if (!this.value) {
                                 validate.call(this);
                             }
                         });
 
                     jQuery('#woocommerce_payuni_ExpireDate')
-                        .bind('input', function(e) {
+                        .bind('input', function (e) {
                             if (!this.value) {
                                 validate.call(this);
                                 return false;
@@ -360,7 +360,7 @@ function payuni_gateway_init()
                                 validate.call(this);
                             }
                         })
-                        .bind('blur', function(e) {
+                        .bind('blur', function (e) {
                             if (!this.value) {
                                 this.value = 7;
                                 validate.call(this);
@@ -369,7 +369,7 @@ function payuni_gateway_init()
                         .after('<span style="display: none;color: red;" id="woocommerce_payuni_ExpireDate_error_msg">請輸入範圍內1~180的數字</span>')
                 </script>
             </table><!--/.form-table-->
-<?php
+            <?php
         }
 
         /**
@@ -399,11 +399,11 @@ function payuni_gateway_init()
         {
             $this->writeLog('thankyou_page');
             $postData = $_REQUEST;
-            $result = $this->ResultProcess($postData);
+            $result   = $this->ResultProcess($postData);
             if ($result['success'] == true) {
                 if (in_array($result['message']['Status'], array('SUCCESS', 'OK'))) {
                     $encryptInfo = $result['message']['EncryptInfo'];
-                    $order = wc_get_order($encryptInfo['MerTradeNo']);
+                    $order       = wc_get_order($encryptInfo['MerTradeNo']);
                     if (!$order) {
                         $msg = "取得訂單失敗，訂單編號：" . $encryptInfo['MerTradeNo'];
                         echo $msg;
@@ -424,7 +424,9 @@ function payuni_gateway_init()
                     echo "交易失敗：" . $result['message']['Status'] . "(" . $result['message']['EncryptInfo']['Message'] . ")";
                 }
             } else {
-                echo "解密失敗";
+                if ('missing EncryptInfo' != $result['message']) {
+                    echo "解密失敗";
+                }
             }
         }
         function get_payunireturn()
@@ -434,12 +436,12 @@ function payuni_gateway_init()
                 return;
             }
             $postData = $_POST;
-            $result = $this->ResultProcess($postData);
+            $result   = $this->ResultProcess($postData);
             if ($result['success'] == true) {
                 // if (in_array($result['message']['Status'], array('SUCCESS', 'OK'))) {
                 if (!empty($result['message']['Status'])) {
                     $encryptInfo = $result['message']['EncryptInfo'];
-                    $order = wc_get_order($encryptInfo['MerTradeNo']);
+                    $order       = wc_get_order($encryptInfo['MerTradeNo']);
                     if (is_array($postData)) {
                         $resultArr = $postData;
                     } else {
@@ -465,11 +467,11 @@ function payuni_gateway_init()
         {
             global $woocommerce;
             $postData = $_REQUEST;
-            $result = $this->ResultProcess($postData);
+            $result   = $this->ResultProcess($postData);
             if ($result['success'] == true) {
                 if ($result['message']['Status'] == 'SUCCESS') {
                     $encryptInfo = $result['message']['EncryptInfo'];
-                    $order = wc_get_order($encryptInfo['MerTradeNo']);
+                    $order       = wc_get_order($encryptInfo['MerTradeNo']);
                     if (!$order) {
                         $msg = "取得訂單失敗，訂單編號：" . $encryptInfo['MerTradeNo'];
                         $this->writeLog($msg);
@@ -514,9 +516,9 @@ function payuni_gateway_init()
 
             // 訂單狀態(物流訂單需判斷是否是取貨完成)
             $shipping_final_status = isset($encryptInfo['Odno']);
-            $status = $shipping_final_status ? $encryptInfo['Message'] : $trdStatus[$encryptInfo['TradeStatus']];
+            $status                = $shipping_final_status ? $encryptInfo['Message'] : $trdStatus[$encryptInfo['TradeStatus']];
 
-            $message   = "<<<code>統一金流 PAYUNi</code>>>";
+            $message = "<<<code>統一金流 PAYUNi</code>>>";
             $message .= "</br>訂單狀態：" . $status;
             $message .= "</br>UNi序號：" . $encryptInfo['TradeNo'];
 
@@ -639,9 +641,9 @@ function payuni_gateway_init()
          */
         private function uppOnePointHandler($order)
         {
-            $prodDesc = [];
+            $prodDesc                = [];
             $shipping_data_method_id = '';
-            $items = $order->get_items();
+            $items                   = $order->get_items();
             foreach ($items as $item) {
                 $prodDesc[] = $item->get_name() . ' * ' . $item->get_quantity();
             }
@@ -662,7 +664,7 @@ function payuni_gateway_init()
 
             // 物流參數
             foreach ($order->get_items('shipping') as $item) {
-                $item_data = $item->get_data();
+                $item_data               = $item->get_data();
                 $shipping_data_method_id = $item_data['method_id'];
             }
 
@@ -672,33 +674,33 @@ function payuni_gateway_init()
                 }
             }
             switch ($shipping_data_method_id) {
-                    // 711 超商取貨(常溫、冷凍)
+                // 711 超商取貨(常溫、冷凍)
                 case 'PAYUNi_Logistic_711':
                 case 'PAYUNi_Logistic_711_Freeze':
                     if ($this->settings['Ship'] == 'yes') {
                         $encryptInfo['Ship'] = 1;
                     }
-                    $encryptInfo['ShipTag']         = 1;
-                    $encryptInfo['ShipType']        = 1;
-                    $encryptInfo['LgsType']         = trim($this->settings['CvsType']);
-                    $encryptInfo['GoodsType']       = $this->shippingGoodsType[$shipping_data_method_id];
-                    $encryptInfo['Consignee']       = $order->get_shipping_last_name() . $order->get_shipping_first_name();
+                    $encryptInfo['ShipTag'] = 1;
+                    $encryptInfo['ShipType'] = 1;
+                    $encryptInfo['LgsType'] = trim($this->settings['CvsType']);
+                    $encryptInfo['GoodsType'] = $this->shippingGoodsType[$shipping_data_method_id];
+                    $encryptInfo['Consignee'] = $order->get_shipping_last_name() . $order->get_shipping_first_name();
                     $encryptInfo['ConsigneeMobile'] = $order->get_billing_phone();
                     break;
-                    // 黑貓取貨(常溫、冷凍、冷藏)
+                // 黑貓取貨(常溫、冷凍、冷藏)
                 case 'PAYUNi_Logistic_Tcat':
                 case 'PAYUNi_Logistic_Tcat_Freeze':
                 case 'PAYUNi_Logistic_Tcat_Cold':
                     if ($this->settings['Ship'] == 'yes') {
                         $encryptInfo['Ship'] = 1;
                     }
-                    $encryptInfo['ShipTag']             = 1;
-                    $encryptInfo['ShipType']            = 2;
-                    $encryptInfo['LgsType']             = 'HOME';
-                    $encryptInfo['GoodsType']           = $this->shippingGoodsType[$shipping_data_method_id];
-                    $encryptInfo['Consignee']           = $order->get_shipping_last_name() . $order->get_shipping_first_name();
-                    $encryptInfo['ConsigneeMobile']     = $order->get_billing_phone();
-                    $encryptInfo['ConsigneeAddress']    = $order->get_shipping_state() . $order->get_shipping_city() . $order->get_shipping_address_1() . $order->get_shipping_address_2();
+                    $encryptInfo['ShipTag'] = 1;
+                    $encryptInfo['ShipType'] = 2;
+                    $encryptInfo['LgsType'] = 'HOME';
+                    $encryptInfo['GoodsType'] = $this->shippingGoodsType[$shipping_data_method_id];
+                    $encryptInfo['Consignee'] = $order->get_shipping_last_name() . $order->get_shipping_first_name();
+                    $encryptInfo['ConsigneeMobile'] = $order->get_billing_phone();
+                    $encryptInfo['ConsigneeAddress'] = $order->get_shipping_state() . $order->get_shipping_city() . $order->get_shipping_address_1() . $order->get_shipping_address_2();
                     $encryptInfo['ConsigneeAddressFix'] = 1;
                     break;
                 default:
@@ -717,7 +719,7 @@ function payuni_gateway_init()
          */
         private function Encrypt($encryptInfo)
         {
-            $tag = '';
+            $tag       = '';
             $encrypted = openssl_encrypt(http_build_query($encryptInfo), 'aes-256-gcm', trim($this->HashKey), 0, trim($this->HashIV), $tag);
             return trim(bin2hex($encrypted . ':::' . base64_encode($tag)));
         }
@@ -727,7 +729,7 @@ function payuni_gateway_init()
         private function Decrypt(string $encryptStr = '')
         {
             list($encryptData, $tag) = explode(':::', hex2bin($encryptStr), 2);
-            $encryptInfo = openssl_decrypt($encryptData, 'aes-256-gcm', trim($this->HashKey), 0, trim($this->HashIV), base64_decode($tag));
+            $encryptInfo             = openssl_decrypt($encryptData, 'aes-256-gcm', trim($this->HashKey), 0, trim($this->HashIV), base64_decode($tag));
             parse_str($encryptInfo, $encryptArr);
             return $encryptArr;
         }
@@ -790,9 +792,9 @@ function payuni_gateway_init()
          */
         function generate_payuni_form($order_id)
         {
-            $order = wc_get_order($order_id);
-            $payuni_args = $this->get_payuni_args($order);
-            $payuni_gateway = $this->gateway;
+            $order             = wc_get_order($order_id);
+            $payuni_args       = $this->get_payuni_args($order);
+            $payuni_gateway    = $this->gateway;
             $payuni_args_array = array();
             foreach ($payuni_args as $key => $value) {
                 $payuni_args_array[] = '<input type="hidden" name="' . $key . '" value="' . $value . '" />';
@@ -822,10 +824,10 @@ function payuni_gateway_init()
             }
 
             $file_name = 'payuni_' . date('Ymd') . '.txt';
-            $file = $file_path . $file_name;
-            $fp = fopen($file, 'a');
-            $input = ($with_input) ? '|REQUEST:' . json_encode($_REQUEST) : '';
-            $log_str = date('Y-m-d H:i:s') . '|' . $msg . $input . "\n";
+            $file      = $file_path . $file_name;
+            $fp        = fopen($file, 'a');
+            $input     = ($with_input) ? '|REQUEST:' . json_encode($_REQUEST) : '';
+            $log_str   = date('Y-m-d H:i:s') . '|' . $msg . $input . "\n";
             fwrite($fp, $log_str);
             fclose($fp);
             $this->clean_old_log($file_path);
@@ -858,7 +860,7 @@ function payuni_gateway_init()
             unset($_SESSION['order_awaiting_payment']);
             //$this->receipt_page($order_id);
             return array(
-                'result' => 'success',
+                'result'   => 'success',
                 'redirect' => $order->get_checkout_payment_url(true)
             );
         }
