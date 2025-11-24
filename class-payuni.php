@@ -4,7 +4,7 @@
  * payuni Payment Gateway
  * Plugin URI: https://www.payuni.com.tw/
  * Description: 統一金流 整合式支付模組
- * Version: 1.2.0
+ * Version: 1.2.4
  * Author URI: https://www.payuni.com.tw/
  * Author: 統一金流 PAYUNi
  * Plugin Name:   統一金流 PAYUNi
@@ -88,6 +88,7 @@ function payuni_gateway_init()
                 'ICash',
                 'Aftee',
                 'LinePay',
+                'JKoPay',
                 'ATM',
                 'CVS',
                 'CreditUnionPay',
@@ -97,6 +98,7 @@ function payuni_gateway_init()
                 'GooglePay',
                 'SamsungPay',
                 'TradeInvoice', // 電子發票是否開啟
+                'LogisticsStatus',
             ];
 
             // Test Mode
@@ -224,6 +226,13 @@ function payuni_gateway_init()
                     'description' => __("選擇是否開啟LINE Pay", 'woocommerce'),
                     'default'     => 'yes'
                 ),
+                'JKoPay'           => array(
+                    'title'       => __('街口支付', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟街口支付", 'woocommerce'),
+                    'default'     => 'yes'
+                ),
                 'ATM'              => array(
                     'title'       => __('虛擬帳號支付', 'woocommerce'),
                     'type'        => 'checkbox',
@@ -293,6 +302,13 @@ function payuni_gateway_init()
                     'label'       => __('啟動', 'woocommerce'),
                     'description' => __("選擇是否開啟電子發票", 'woocommerce'),
                     'default'     => 'no'
+                ),
+                'LogisticsStatus'  => array(
+                    'title'       => __('接收物流貨態', 'woocommerce'),
+                    'type'        => 'checkbox',
+                    'label'       => __('啟動', 'woocommerce'),
+                    'description' => __("選擇是否開啟接收物流貨態", 'woocommerce'),
+                    'default'     => 'yes'
                 ),
             );
         }
@@ -477,22 +493,28 @@ function payuni_gateway_init()
                         $this->writeLog($msg);
                         exit;
                     }
-                    $oAmt = round($order->get_total());
-                    $rAmt = $encryptInfo['TradeAmt'];
-                    if ($oAmt != $rAmt) {
-                        $msg = "結帳金額與訂單金額不一致";
-                        $this->writeLog($msg);
-                        exit;
+                    // 不是貨態才需要驗證
+                    if (empty($encryptInfo['ApiType'])) {
+                        $oAmt = round($order->get_total());
+                        $rAmt = $encryptInfo['TradeAmt'];
+                        if ($oAmt != $rAmt) {
+                            $msg = "結帳金額與訂單金額不一致";
+                            $this->writeLog($msg);
+                            exit;
+                        }
                     }
                     $message = $this->SetNotice($encryptInfo);
                     $order->add_order_note($message, 1);
-                    switch ($encryptInfo['TradeStatus']) {
-                        case '0':
-                            $order->update_status('on-hold', __('Awaiting cheque payment', 'woocommerce'));
-                            break;
-                        case '1':
-                            $order->payment_complete();
-                            break;
+                    // 不是貨態才調整狀態
+                    if (empty($encryptInfo['ApiType'])) {
+                        switch ($encryptInfo['TradeStatus']) {
+                            case '0':
+                                $order->update_status('on-hold', __('Awaiting cheque payment', 'woocommerce'));
+                                break;
+                            case '1':
+                                $order->payment_complete();
+                                break;
+                        }
                     }
                 } else {
                     $msg = "交易失敗：" . $result['message']['Status'] . "(" . $result['message']['EncryptInfo']['Message'] . ")";
@@ -519,97 +541,122 @@ function payuni_gateway_init()
             $status                = $shipping_final_status ? $encryptInfo['Message'] : $trdStatus[$encryptInfo['TradeStatus']];
 
             $message = "<<<code>統一金流 PAYUNi</code>>>";
-            $message .= "</br>訂單狀態：" . $status;
-            $message .= "</br>UNi序號：" . $encryptInfo['TradeNo'];
+            // 不是貨態組交易訊息
+            if (empty($encryptInfo['ApiType'])) {
+                $message .= "</br>訂單狀態：" . $status;
+                $message .= "</br>UNi序號：" . $encryptInfo['TradeNo'];
 
-            switch ($encryptInfo['PaymentType']) {
-                case '1': // 信用卡
-                    $authType = [0 => '無', 1 => '一次', 2 => '分期', 3 => '紅利', 4 => 'Apple Pay', 5 => 'Google Pay', 6 => 'Samsung Pay', 7 => '銀聯'];
-                    $encryptInfo['AuthType'] = (array_key_exists($encryptInfo['AuthType'], $authType)) ? $encryptInfo['AuthType'] : 0;
-                    if (!$shipping_final_status) {
-                        $message .= "</br>授權狀態：" . $encryptInfo['Message'];
-                        $message .= "</br>卡號：" . $encryptInfo['Card6No'] . '******' . $encryptInfo['Card4No'];
-                        if ($encryptInfo['CardInst'] > 1) {
-                            $message .= "</br>分期數：" . $encryptInfo['CardInst'];
-                            $message .= "</br>首期金額：" . $encryptInfo['FirstAmt'];
-                            $message .= "</br>每期金額：" . $encryptInfo['EachAmt'];
-                        }
-                        $message .= "</br>授權碼：" . $encryptInfo['AuthCode'];
-                        $message .= "</br>授權銀行代號：" . $encryptInfo['AuthBank'];
-                        $message .= "</br>授權銀行：" . $encryptInfo['AuthBankName'];
-                        $message .= "</br>授權類型：" . $authType[$encryptInfo['AuthType']];
-                        $message .= "</br>授權日期：" . $encryptInfo['AuthDay'];
-                        $message .= "</br>授權時間：" . $encryptInfo['AuthTime'];
-                    }
-                    break;
-                case '2': // atm轉帳
-                    if ($encryptInfo['TradeStatus'] == 1) {
-                        $message .= "</br>付款銀行代碼：" . $encryptInfo['PayBank'];
-                        $message .= "</br>付款帳號後5碼：" . $encryptInfo['Account5No'];
-                    } else {
-                        $message .= "</br>銀行代碼：" . $encryptInfo['BankType'];
-                        $message .= "</br>繳費帳號：" . $encryptInfo['PayNo'];
-                        $message .= "</br>繳費截止時間：" . $encryptInfo['ExpireDate'];
-                    }
-                    break;
-                case '3': // 超商代碼
-                    $store = ['SEVEN' => '統一超商 (7-11)'];
-                    if ($encryptInfo['TradeStatus'] == 0) {
-                        $message .= "</br>繳費方式：" . $store[$encryptInfo['Store']];
-                        $message .= "</br>繳費代號：" . $encryptInfo['PayNo'];
-                        $message .= "</br>繳費截止時間：" . $encryptInfo['ExpireDate'];
-                    }
-                    break;
-                case '6': // ICP 愛金卡
-                    if (!$shipping_final_status) {
-                        $message .= "</br>愛金卡交易序號：" . $encryptInfo['PayNo'];
-                        $message .= "</br>付款日期時間：" . $encryptInfo['PayTime'];
-                    }
-                    break;
-                case '7': // AFTEE
-                    if (!$shipping_final_status) {
-                        $message .= "</br>AFTEE交易序號：" . $encryptInfo['PayNo'];
-                    }
-                    break;
-                case '9': // LINE Pay
-                    if (!$shipping_final_status) {
-                        $message .= "</br>LINE Pay交易序號：" . $encryptInfo['PayNo'];
-                    }
-                    break;
-                default: // 預設顯示資訊
-                    break;
-            }
-
-            //物流資訊
-            if (isset($encryptInfo['ShipType'])) {
-                switch ($encryptInfo['ShipType']) {
-                    case '1': // SEVEN
-                        $goodsType = [1 => '常溫', 2 => '冷凍'];
-                        $serviceType = [1 => '取貨付款', 3 => '取貨不付款'];
-                        $message .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
-                        $message .= "</br>通路類別： 7-11";
-                        $message .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
+                switch ($encryptInfo['PaymentType']) {
+                    case '1': // 信用卡
+                        $authType = [0 => '無', 1 => '一次', 2 => '分期', 3 => '紅利', 4 => 'Apple Pay', 5 => 'Google Pay', 6 => 'Samsung Pay', 7 => '銀聯'];
+                        $encryptInfo['AuthType'] = (array_key_exists($encryptInfo['AuthType'], $authType)) ? $encryptInfo['AuthType'] : 0;
                         if (!$shipping_final_status) {
-                            $message .= "</br>取件門市名稱：" . $encryptInfo['StoreName'];
-                            $message .= "</br>取件門市地址：" . $encryptInfo['StoreAddr'];
-                            $message .= "</br>收件人：" . $encryptInfo['Consignee'];
-                            $message .= "</br>收件人手機號碼：" . $encryptInfo['ConsigneeMobile'];
+                            $message .= "</br>授權狀態：" . $encryptInfo['Message'];
+                            $message .= "</br>卡號：" . $encryptInfo['Card6No'] . '******' . $encryptInfo['Card4No'];
+                            if ($encryptInfo['CardInst'] > 1) {
+                                $message .= "</br>分期數：" . $encryptInfo['CardInst'];
+                                $message .= "</br>首期金額：" . $encryptInfo['FirstAmt'];
+                                $message .= "</br>每期金額：" . $encryptInfo['EachAmt'];
+                            }
+                            $message .= "</br>授權碼：" . $encryptInfo['AuthCode'];
+                            $message .= "</br>授權銀行代號：" . $encryptInfo['AuthBank'];
+                            $message .= "</br>授權銀行：" . $encryptInfo['AuthBankName'];
+                            $message .= "</br>授權類型：" . $authType[$encryptInfo['AuthType']];
+                            $message .= "</br>授權日期：" . $encryptInfo['AuthDay'];
+                            $message .= "</br>授權時間：" . $encryptInfo['AuthTime'];
                         }
                         break;
-                    case '2': // 黑貓
-                        $goodsType = [1 => '常溫', 2 => '冷凍', 3 => '冷藏'];
-                        $serviceType = [1 => '取貨付款', 3 => '取貨不付款'];
-                        $message .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
-                        $message .= "</br>通路類別： 黑貓";
-                        $message .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
+                    case '2': // atm轉帳
+                        if ($encryptInfo['TradeStatus'] == 1) {
+                            $message .= "</br>付款銀行代碼：" . $encryptInfo['PayBank'];
+                            $message .= "</br>付款帳號後5碼：" . $encryptInfo['Account5No'];
+                        } else {
+                            $message .= "</br>銀行代碼：" . $encryptInfo['BankType'];
+                            $message .= "</br>繳費帳號：" . $encryptInfo['PayNo'];
+                            $message .= "</br>繳費截止時間：" . $encryptInfo['ExpireDate'];
+                        }
+                        break;
+                    case '3': // 超商代碼
+                        $store = ['SEVEN' => '統一超商 (7-11)'];
+                        if ($encryptInfo['TradeStatus'] == 0) {
+                            $message .= "</br>繳費方式：" . $store[$encryptInfo['Store']];
+                            $message .= "</br>繳費代號：" . $encryptInfo['PayNo'];
+                            $message .= "</br>繳費截止時間：" . $encryptInfo['ExpireDate'];
+                        }
+                        break;
+                    case '6': // ICP 愛金卡
                         if (!$shipping_final_status) {
-                            $message .= "</br>收件人：" . $encryptInfo['Consignee'];
-                            $message .= "</br>收件人手機號碼：" . $encryptInfo['ConsigneeMobile'];
+                            $message .= "</br>愛金卡交易序號：" . $encryptInfo['PayNo'];
+                            $message .= "</br>付款日期時間：" . $encryptInfo['PayTime'];
+                        }
+                        break;
+                    case '7': // AFTEE
+                        if (!$shipping_final_status) {
+                            $message .= "</br>AFTEE交易序號：" . $encryptInfo['PayNo'];
+                        }
+                        break;
+                    case '9': // LINE Pay
+                        if (!$shipping_final_status) {
+                            $message .= "</br>LINE Pay交易序號：" . $encryptInfo['PayNo'];
                         }
                         break;
                     default: // 預設顯示資訊
                         break;
                 }
+
+                //物流資訊
+                if (isset($encryptInfo['ShipType'])) {
+                    switch ($encryptInfo['ShipType']) {
+                        case '1': // SEVEN
+                            $goodsType = [1 => '常溫', 2 => '冷凍'];
+                            $serviceType = [1 => '取貨付款', 3 => '取貨不付款'];
+                            $message .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
+                            $message .= "</br>通路類別： 7-11";
+                            $message .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
+                            if (!$shipping_final_status) {
+                                $message .= "</br>取件門市名稱：" . $encryptInfo['StoreName'];
+                                $message .= "</br>取件門市地址：" . $encryptInfo['StoreAddr'];
+                                $message .= "</br>收件人：" . $encryptInfo['Consignee'];
+                                $message .= "</br>收件人手機號碼：" . $encryptInfo['ConsigneeMobile'];
+                            }
+                            break;
+                        case '2': // 黑貓
+                            $goodsType = [1 => '常溫', 2 => '冷凍', 3 => '冷藏'];
+                            $serviceType = [1 => '取貨付款', 3 => '取貨不付款'];
+                            $message .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
+                            $message .= "</br>通路類別： 黑貓";
+                            $message .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
+                            if (!$shipping_final_status) {
+                                $message .= "</br>收件人：" . $encryptInfo['Consignee'];
+                                $message .= "</br>收件人手機號碼：" . $encryptInfo['ConsigneeMobile'];
+                            }
+                            break;
+                        default: // 預設顯示資訊
+                            break;
+                    }
+                }
+            } elseif ('ShipStatus' == $encryptInfo['ApiType']) {
+                // 物流貨態訊息
+                switch ($encryptInfo['LgsType']) {
+                    case 'B2C':
+                    case 'C2C':
+                        $message .= "</br>訂單狀態：" . $encryptInfo['Message'];
+
+                        $message .= "</br>母代碼：" . $encryptInfo['PartnerId'];
+                        $message .= "</br>UNi物流序號：" . $encryptInfo['ShipTradeNo'];
+                        $message .= "</br>物流型態：" . $encryptInfo['LgsType'];
+                        $message .= "</br>寄件型態：" . ((1 == $encryptInfo['GoodsType']) ? '常溫' : '冷凍');
+                        // $message .= "</br>通路類別：" . $encryptInfo['ShipType'];
+                        $message .= "</br>物流貨態狀態碼：" . $encryptInfo['ShipStatus'];
+                        // $message .= "</br>取貨門市類型：" . $encryptInfo['PickupStoreType'];
+                        $message .= "</br>貨態說明：" . $encryptInfo['ShipStatusDesc'];
+                        $message .= "</br>貨態日期：" . $encryptInfo['ShipStatusTime'];
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $message .= "</br>訂單狀態：" . $encryptInfo['Message'];
             }
 
             return $message;
