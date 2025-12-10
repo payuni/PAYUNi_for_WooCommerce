@@ -4,7 +4,7 @@
  * payuni Payment Gateway
  * Plugin URI: https://www.payuni.com.tw/
  * Description: 統一金流 整合式支付模組
- * Version: 1.2.4
+ * Version: 1.2.5
  * Author URI: https://www.payuni.com.tw/
  * Author: 統一金流 PAYUNi
  * Plugin Name:   統一金流 PAYUNi
@@ -537,7 +537,7 @@ function payuni_gateway_init()
             $trdStatus = ['待付款', '已付款', '付款失敗', '付款取消'];
 
             // 訂單狀態(物流訂單需判斷是否是取貨完成)
-            $shipping_final_status = isset($encryptInfo['Odno']);
+            $shipping_final_status = (isset($encryptInfo['Odno']) || isset($encryptInfo['InvoiceNotifyType'])) ? true : false;
             $status                = $shipping_final_status ? $encryptInfo['Message'] : $trdStatus[$encryptInfo['TradeStatus']];
 
             $message = "<<<code>統一金流 PAYUNi</code>>>";
@@ -633,6 +633,34 @@ function payuni_gateway_init()
                             break;
                         default: // 預設顯示資訊
                             break;
+                    }
+                }
+                // 發票資訊
+                if (isset($encryptInfo['InvoiceNotifyType'])) {
+                    $message .= "</br>發票類別：" . ('C0401' == $encryptInfo['InvoiceNotifyType'] ? '開立發票' : '作廢發票');
+                    switch ($encryptInfo['InvoiceInfo']) {
+                        case '3J0002':
+                            $invoiceInfo = '手機條碼';
+                            break;
+                        case 'CQ0001':
+                            $invoiceInfo = '自然人憑證';
+                            break;
+                        case 'amego':
+                            $invoiceInfo = '會員載具';
+                            break;
+                        case 'Donate':
+                            $invoiceInfo = '捐贈發票';
+                            break;
+                        case 'Company':
+                            $invoiceInfo = '公司發票';
+                            break;
+                    }
+                    $message .= "</br>發票資訊：" . $invoiceInfo;
+                    $message .= "</br>發票號碼：" . $encryptInfo['InvoiceNo'];
+                    $message .= "</br>發票隨機碼：" . $encryptInfo['InvoiceRandom'];
+                    if ('C0401' == $encryptInfo['InvoiceNotifyType']) {
+                        $message .= "</br>發票開立時間：" . $encryptInfo['InvoiceTime'];
+                        $message .= "</br>未稅金額：" . $encryptInfo['SalesAmt'];
                     }
                 }
             } elseif ('ShipStatus' == $encryptInfo['ApiType']) {
