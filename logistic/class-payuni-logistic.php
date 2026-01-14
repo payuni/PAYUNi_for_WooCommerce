@@ -24,11 +24,11 @@ class WC_PAYUNi_Logistic
     // 塞入物流方式
     public function insert_shipping_methods($methods)
     {
-        $methods['PAYUNi_Logistic_711'] = 'PAYUNi_Logistic_711';
-        $methods['PAYUNi_Logistic_711_Freeze'] = 'PAYUNi_Logistic_711_Freeze';
-        $methods['PAYUNi_Logistic_Tcat'] = 'PAYUNi_Logistic_Tcat';
+        $methods['PAYUNi_Logistic_711']         = 'PAYUNi_Logistic_711';
+        $methods['PAYUNi_Logistic_711_Freeze']  = 'PAYUNi_Logistic_711_Freeze';
+        $methods['PAYUNi_Logistic_Tcat']        = 'PAYUNi_Logistic_Tcat';
         $methods['PAYUNi_Logistic_Tcat_Freeze'] = 'PAYUNi_Logistic_Tcat_Freeze';
-        $methods['PAYUNi_Logistic_Tcat_Cold'] = 'PAYUNi_Logistic_Tcat_Cold';
+        $methods['PAYUNi_Logistic_Tcat_Cold']   = 'PAYUNi_Logistic_Tcat_Cold';
 
         return $methods;
     }
@@ -40,11 +40,11 @@ class WC_PAYUNi_Logistic
         $session = WC()->session;
         // var_dump($session);
         if ($session) {
-            $chosen_shipping_tmp = wc_get_chosen_shipping_method_ids();
-            if (empty($chosen_shipping_tmp)) {
+            if (!function_exists('wc_get_chosen_shipping_method_ids')) {
                 return $payment_gateways;
             }
-            $chosen_shipping = $chosen_shipping_tmp[0];
+            $chosen_shipping_tmp = wc_get_chosen_shipping_method_ids();
+            $chosen_shipping     = $chosen_shipping_tmp[0];
 
             if (!empty($chosen_shipping) && preg_match("/PAYUNi/i", $chosen_shipping)) {
                 $payment_gateways = [

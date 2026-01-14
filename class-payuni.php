@@ -4,7 +4,7 @@
  * payuni Payment Gateway
  * Plugin URI: https://www.payuni.com.tw/
  * Description: 統一金流 整合式支付模組
- * Version: 1.2.5
+ * Version: 1.2.6
  * Author URI: https://www.payuni.com.tw/
  * Author: 統一金流 PAYUNi
  * Plugin Name:   統一金流 PAYUNi
@@ -14,7 +14,7 @@
  */
 require_once plugin_dir_path(__FILE__) . '/logistic/class-payuni-logistic.php';
 
-add_action('plugins_loaded', 'payuni_gateway_init', 0);
+add_action('plugins_loaded', 'payuni_gateway_init');
 
 function payuni_gateway_init()
 {
