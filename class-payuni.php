@@ -4,7 +4,7 @@
  * payuni Payment Gateway
  * Plugin URI: https://www.payuni.com.tw/
  * Description: 統一金流 整合式支付模組
- * Version: 1.2.6
+ * Version: 1.2.7
  * Author URI: https://www.payuni.com.tw/
  * Author: 統一金流 PAYUNi
  * Plugin Name:   統一金流 PAYUNi
@@ -485,14 +485,14 @@ function payuni_gateway_init()
             $postData = $_REQUEST;
             $result   = $this->ResultProcess($postData);
             if ($result['success'] == true) {
+                $encryptInfo = $result['message']['EncryptInfo'];
+                $order       = wc_get_order($encryptInfo['MerTradeNo']);
+                if (!$order) {
+                    $msg = "取得訂單失敗，訂單編號：" . $encryptInfo['MerTradeNo'];
+                    $this->writeLog($msg);
+                    exit;
+                }
                 if ($result['message']['Status'] == 'SUCCESS') {
-                    $encryptInfo = $result['message']['EncryptInfo'];
-                    $order       = wc_get_order($encryptInfo['MerTradeNo']);
-                    if (!$order) {
-                        $msg = "取得訂單失敗，訂單編號：" . $encryptInfo['MerTradeNo'];
-                        $this->writeLog($msg);
-                        exit;
-                    }
                     // 不是貨態才需要驗證
                     if (empty($encryptInfo['ApiType'])) {
                         $oAmt = round($order->get_total());
@@ -518,6 +518,7 @@ function payuni_gateway_init()
                     }
                 } else {
                     $msg = "交易失敗：" . $result['message']['Status'] . "(" . $result['message']['EncryptInfo']['Message'] . ")";
+                    $order->add_order_note($msg, 1);
                     $this->writeLog($msg);
                     exit;
                 }
