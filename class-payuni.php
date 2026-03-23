@@ -4,7 +4,7 @@
  * payuni Payment Gateway
  * Plugin URI: https://www.payuni.com.tw/
  * Description: 統一金流 整合式支付模組
- * Version: 1.2.7
+ * Version: 1.2.8
  * Author URI: https://www.payuni.com.tw/
  * Author: 統一金流 PAYUNi
  * Plugin Name:   統一金流 PAYUNi
@@ -549,7 +549,7 @@ function payuni_gateway_init()
 
                 switch ($encryptInfo['PaymentType']) {
                     case '1': // 信用卡
-                        $authType = [0 => '無', 1 => '一次', 2 => '分期', 3 => '紅利', 4 => 'Apple Pay', 5 => 'Google Pay', 6 => 'Samsung Pay', 7 => '銀聯'];
+                        $authType                = [0 => '無', 1 => '一次', 2 => '分期', 3 => '紅利', 4 => 'Apple Pay', 5 => 'Google Pay', 6 => 'Samsung Pay', 7 => '銀聯'];
                         $encryptInfo['AuthType'] = (array_key_exists($encryptInfo['AuthType'], $authType)) ? $encryptInfo['AuthType'] : 0;
                         if (!$shipping_final_status) {
                             $message .= "</br>授權狀態：" . $encryptInfo['Message'];
@@ -609,11 +609,11 @@ function payuni_gateway_init()
                 if (isset($encryptInfo['ShipType'])) {
                     switch ($encryptInfo['ShipType']) {
                         case '1': // SEVEN
-                            $goodsType = [1 => '常溫', 2 => '冷凍'];
-                            $serviceType = [1 => '取貨付款', 3 => '取貨不付款'];
-                            $message .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
-                            $message .= "</br>通路類別： 7-11";
-                            $message .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
+                            $goodsType    = [1 => '常溫', 2 => '冷凍'];
+                            $serviceType  = [1 => '取貨付款', 3 => '取貨不付款'];
+                            $message     .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
+                            $message     .= "</br>通路類別： 7-11";
+                            $message     .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
                             if (!$shipping_final_status) {
                                 $message .= "</br>取件門市名稱：" . $encryptInfo['StoreName'];
                                 $message .= "</br>取件門市地址：" . $encryptInfo['StoreAddr'];
@@ -622,11 +622,11 @@ function payuni_gateway_init()
                             }
                             break;
                         case '2': // 黑貓
-                            $goodsType = [1 => '常溫', 2 => '冷凍', 3 => '冷藏'];
-                            $serviceType = [1 => '取貨付款', 3 => '取貨不付款'];
-                            $message .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
-                            $message .= "</br>通路類別： 黑貓";
-                            $message .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
+                            $goodsType    = [1 => '常溫', 2 => '冷凍', 3 => '冷藏'];
+                            $serviceType  = [1 => '取貨付款', 3 => '取貨不付款'];
+                            $message     .= "</br>寄件型態：" . $goodsType[$encryptInfo['GoodsType']];
+                            $message     .= "</br>通路類別： 黑貓";
+                            $message     .= "</br>取貨方式：" . $serviceType[$encryptInfo['ServiceType']];
                             if (!$shipping_final_status) {
                                 $message .= "</br>收件人：" . $encryptInfo['Consignee'];
                                 $message .= "</br>收件人手機號碼：" . $encryptInfo['ConsigneeMobile'];
@@ -675,12 +675,21 @@ function payuni_gateway_init()
                         $message .= "</br>UNi物流序號：" . $encryptInfo['ShipTradeNo'];
                         $message .= "</br>物流型態：" . $encryptInfo['LgsType'];
                         $message .= "</br>寄件型態：" . ((1 == $encryptInfo['GoodsType']) ? '常溫' : '冷凍');
-                        // $message .= "</br>通路類別：" . $encryptInfo['ShipType'];
                         $message .= "</br>物流貨態狀態碼：" . $encryptInfo['ShipStatus'];
                         // $message .= "</br>取貨門市類型：" . $encryptInfo['PickupStoreType'];
                         $message .= "</br>貨態說明：" . $encryptInfo['ShipStatusDesc'];
                         $message .= "</br>貨態日期：" . $encryptInfo['ShipStatusTime'];
                         break;
+                    case 'HOME':
+                        $message .= "</br>訂單狀態：" . $encryptInfo['Message'];
+                        $message .= "</br>宅配類別：" . (1 == $encryptInfo['TradeType']) ? '正物流(黑貓宅配)' : '逆物流(黑貓退貨)';
+                        $message .= "</br>UNi物流序號：" . $encryptInfo['ShipTradeNo'];
+                        $message .= "</br>宅配單號：" . $encryptInfo['OBTNumber'];
+                        $message .= "</br>物流型態：" . $encryptInfo['LgsType'];
+                        $message .= "</br>寄件型態：" . ((1 == $encryptInfo['GoodsType']) ? '常溫' : ((2 == $encryptInfo['GoodsType']) ? '冷凍' : '冷藏'));
+                        $message .= "</br>物流貨態狀態碼：" . $encryptInfo['ShipStatus'];
+                        $message .= "</br>貨態說明：" . $encryptInfo['ShipStatusDesc'];
+                        $message .= "</br>貨態日期：" . $encryptInfo['ShipStatusTime'];
                     default:
                         break;
                 }
@@ -756,11 +765,11 @@ function payuni_gateway_init()
                     if ($this->settings['Ship'] == 'yes') {
                         $encryptInfo['Ship'] = 1;
                     }
-                    $encryptInfo['ShipTag'] = 1;
-                    $encryptInfo['ShipType'] = 1;
-                    $encryptInfo['LgsType'] = trim($this->settings['CvsType']);
-                    $encryptInfo['GoodsType'] = $this->shippingGoodsType[$shipping_data_method_id];
-                    $encryptInfo['Consignee'] = $order->get_shipping_last_name() . $order->get_shipping_first_name();
+                    $encryptInfo['ShipTag']         = 1;
+                    $encryptInfo['ShipType']        = 1;
+                    $encryptInfo['LgsType']         = trim($this->settings['CvsType']);
+                    $encryptInfo['GoodsType']       = $this->shippingGoodsType[$shipping_data_method_id];
+                    $encryptInfo['Consignee']       = $order->get_shipping_last_name() . $order->get_shipping_first_name();
                     $encryptInfo['ConsigneeMobile'] = $order->get_billing_phone();
                     break;
                 // 黑貓取貨(常溫、冷凍、冷藏)
@@ -770,13 +779,13 @@ function payuni_gateway_init()
                     if ($this->settings['Ship'] == 'yes') {
                         $encryptInfo['Ship'] = 1;
                     }
-                    $encryptInfo['ShipTag'] = 1;
-                    $encryptInfo['ShipType'] = 2;
-                    $encryptInfo['LgsType'] = 'HOME';
-                    $encryptInfo['GoodsType'] = $this->shippingGoodsType[$shipping_data_method_id];
-                    $encryptInfo['Consignee'] = $order->get_shipping_last_name() . $order->get_shipping_first_name();
-                    $encryptInfo['ConsigneeMobile'] = $order->get_billing_phone();
-                    $encryptInfo['ConsigneeAddress'] = $order->get_shipping_state() . $order->get_shipping_city() . $order->get_shipping_address_1() . $order->get_shipping_address_2();
+                    $encryptInfo['ShipTag']             = 1;
+                    $encryptInfo['ShipType']            = 2;
+                    $encryptInfo['LgsType']             = 'HOME';
+                    $encryptInfo['GoodsType']           = $this->shippingGoodsType[$shipping_data_method_id];
+                    $encryptInfo['Consignee']           = $order->get_shipping_last_name() . $order->get_shipping_first_name();
+                    $encryptInfo['ConsigneeMobile']     = $order->get_billing_phone();
+                    $encryptInfo['ConsigneeAddress']    = $order->get_shipping_state() . $order->get_shipping_city() . $order->get_shipping_address_1() . $order->get_shipping_address_2();
                     $encryptInfo['ConsigneeAddressFix'] = 1;
                     break;
                 default:
