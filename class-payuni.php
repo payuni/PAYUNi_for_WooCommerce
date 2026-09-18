@@ -4,7 +4,7 @@
  * payuni Payment Gateway
  * Plugin URI: https://www.payuni.com.tw/
  * Description: 統一金流 整合式支付模組
- * Version: 1.2.8
+ * Version: 1.2.9
  * Author URI: https://www.payuni.com.tw/
  * Author: 統一金流 PAYUNi
  * Plugin Name:   統一金流 PAYUNi
@@ -674,9 +674,9 @@ function payuni_gateway_init()
                         $message .= "</br>母代碼：" . $encryptInfo['PartnerId'];
                         $message .= "</br>UNi物流序號：" . $encryptInfo['ShipTradeNo'];
                         $message .= "</br>物流型態：" . $encryptInfo['LgsType'];
+                        $message .= "</br>出貨單編號：" . $encryptInfo['Odno'];
                         $message .= "</br>寄件型態：" . ((1 == $encryptInfo['GoodsType']) ? '常溫' : '冷凍');
                         $message .= "</br>物流貨態狀態碼：" . $encryptInfo['ShipStatus'];
-                        // $message .= "</br>取貨門市類型：" . $encryptInfo['PickupStoreType'];
                         $message .= "</br>貨態說明：" . $encryptInfo['ShipStatusDesc'];
                         $message .= "</br>貨態日期：" . $encryptInfo['ShipStatusTime'];
                         break;
